@@ -65,16 +65,39 @@ async function thanks(url, env) {
   if (!row) {
     // the webhook can arrive after the redirect: confirm with Stripe and issue it here
     const s = await stripeFor(env).checkout.sessions.retrieve(id).catch(() => null);
-    if (!s || s.payment_status !== "paid") return page("Payment pending", "<h1>Payment still processing</h1><p>Reload this page in a minute.</p>", 202);
+    if (!s || s.payment_status !== "paid") {
+      // keep checking: a paid session usually settles within seconds of the redirect, so the
+      // page reloads itself (bounded) rather than leaving the buyer to reload by hand
+      const tries = Math.min(parseInt(url.searchParams.get("t") || "0", 10) || 0, 12);
+      const retry = tries < 12
+        ? `<p class="m">This usually takes a few seconds. Checking again… (${tries + 1})</p>
+<script>setTimeout(function(){location.replace(location.pathname+'?session_id='+encodeURIComponent(${JSON.stringify(id)})+'&t='+${tries + 1});},5000);</script>`
+        : `<p class="m">Still not confirmed. If you were charged, reload this page, or keep this link — your key appears here once payment settles.</p>
+<div class="row"><a class="b" href="?session_id=${esc(id)}">Reload</a></div>`;
+      return page("Payment processing", `<h1>Payment processing…</h1>${retry}`, 202);
+    }
     row = await issueForSession(env, s);
   }
   const deep = `clacket://activate?key=${encodeURIComponent(row.key)}`;
   const file = `data:text/plain;charset=utf-8,${encodeURIComponent(row.key + "\n")}`;
+  const jsKey = JSON.stringify(row.key); // key is [A-Z2-7-] only, safe to inline
   return page("Your Clacket Pro key", `<h1>You have Clacket Pro</h1>
-<p>Here is your key. <b>Save it</b> — this page and the file below are the only places it is shown.</p><code id="k">${esc(row.key)}</code>
-<div class="row"><a class="b" href="${esc(deep)}">Open in Clacket</a>
-<a class="b s" href="${file}" download="clacket.license">Download clacket.license</a></div>
-<p class="m">Clacket checks the key on your computer. It never connects to the internet.</p>`);
+<p>Here is your key. The <b>clacket.license</b> file downloads automatically — opening it activates Clacket Pro. Keep it safe; this page is the only place the key is shown.</p>
+<code id="k">${esc(row.key)}</code>
+<div class="row"><a class="b" id="open" href="${esc(deep)}">Open in Clacket</a>
+<a class="b s" id="dl" href="${file}" download="clacket.license">Download clacket.license</a>
+<button class="s" id="copy" type="button">Copy key</button></div>
+<p class="m">Clacket checks the key on your computer. It never connects to the internet.</p>
+<script>
+(function(){
+  try{ localStorage.setItem('clacket_key', ${jsKey}); }catch(e){}
+  try{ document.getElementById('dl').click(); }catch(e){}           // auto-download the license file
+  var c=document.getElementById('copy');
+  if(c) c.addEventListener('click', function(){
+    try{ navigator.clipboard.writeText(${jsKey}); c.textContent='Copied'; }catch(e){}
+  });
+})();
+</script>`);
 }
 
 /** No email is sent (the key is delivered on the thanks page), so this is a help page,
