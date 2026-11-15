@@ -246,7 +246,7 @@ function renderSide() {
         if (v === "__file") return;
         quiet(call("set_sound", { ids, sound: v ? { builtin: v } : null }, err).then(() => quiet(call("preview", { event: ids[0] }))));
       }, `Sound for ${title}`),
-      h("button", { text: "Choose file…", onclick: () => quiet(call("import_sound", { ids }, err).then((ok) => ok && quiet(call("preview", { event: ids[0] })))) }),
+      h("button", { text: "Choose file…", onclick: () => quiet(call("import_sound", { ids }, err)) }),
       h("button", { text: "Preview", onclick: () => quiet(call("preview", { event: ids[0] }, err)) }),
       h("button", { text: "Reset to default", disabled: refs.every((r) => !r), onclick: () => quiet(call("set_sound", { ids, sound: null }, err)) }),
       err),
@@ -262,7 +262,7 @@ const FX_FEEL = {
 };
 // schematic line icons; .hl fills with the accent. 24x24, currentColor stroke.
 function fxIcon(id) {
-  const S = (inner) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+  const S = (inner) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
   const mouse = (hl) => S(`<rect x="6" y="2.5" width="12" height="19" rx="6"/><line x1="12" y1="3.2" x2="12" y2="10"/>${hl}`);
   const dev = id.startsWith("plug:") ? id.split(":")[1] : null;
   const M = {
@@ -524,6 +524,7 @@ listen("license-result", (e) => {
   else { openUpgrade(); $("key-error").textContent = e.payload.Err; }
 });
 listen("device-event", (e) => { $("last-event").textContent = e.payload; });
+listen("import-error", (e) => { const m = Array.isArray(e.payload) ? e.payload[1] : String(e.payload); banner(m, null); });
 // a key-up can go missing (macOS Secure Input hides it), so a lit key also clears itself
 const unlight = {};
 listen("key-event", (e) => {
