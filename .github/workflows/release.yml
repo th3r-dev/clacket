@@ -131,7 +131,7 @@ jobs:
     permissions:
       contents: read  # gh release download
     steps:
-      - - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - name: Check Cloudflare token
@@ -144,7 +144,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: ./scripts/build-site.sh
-      - - uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
+      - uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
         if: steps.cf.outputs.ready == 'true'
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}

@@ -7,7 +7,8 @@
 
 <p align="center">
   Mechanical keyboard sounds for any keyboard, on macOS, Windows and Linux.<br>
-  Clacket sits in your menu bar, plays a real switch recording on every key press, and never connects to the internet.
+  Clacket sits in your menu bar, plays a real switch recording on every key press, and never connects to the internet.<br>
+  <a href="https://clacket.th33raphat.dev"><b>clacket.th33raphat.dev</b></a>: try every switch in your browser.
 </p>
 
 <p align="center">
@@ -64,6 +65,14 @@ Download the installer for your system from [Releases](../../releases/latest): `
 - **Windows:** no setup.
 - **Linux:** Clacket reads `/dev/input`, which works on X11 and Wayland. Add yourself to the `input` group (`sudo usermod -aG input $USER`) and log out and back in.
 
+## Website
+
+[clacket.th33raphat.dev](https://clacket.th33raphat.dev) is a static Cloudflare Worker built from `site/`. It has a live demo that plays the same recordings in the browser, and it hosts the installers, since this repo is private. `scripts/build-site.sh` assembles it from the app's sounds, fonts and screenshots and the latest release's installers. Each release redeploys it.
+
+```sh
+scripts/build-site.sh && (cd site && npx wrangler deploy)
+```
+
 ## Build from source
 
 You need Rust (stable), the Tauri CLI (`cargo install tauri-cli --version "^2" --locked`), and on Linux the [Tauri system packages](https://v2.tauri.app/start/prerequisites/#linux).
@@ -89,6 +98,7 @@ src-tauri/   the app (Rust + Tauri 2)
   assets/sounds/    switch and effect recordings, packed into the binary at build time
 ui/          settings window: plain HTML, CSS and JS, no framework
 server/      Cloudflare Worker that sells Pro through Stripe and signs keys
+site/        clacket.th33raphat.dev: promo page and browser demo
 scripts/     regenerate sounds and the key table; the no-network check
 ```
 
