@@ -14,12 +14,20 @@ const src = process.argv[2]
 // DOM_CODE(usb, evdev, xkb, win, mac, "code", ID), // optional US legend comment like "aA"
 const re = /DOM_CODE\((0x[0-9a-f]+),\s*(0x[0-9a-f]+),\s*(0x[0-9a-f]+),\s*(0x[0-9a-f]+),\s*(0x[0-9a-f]+),\s*"(\w+)",\s*\w+\)(?:,\s*\/\/\s*(\S{1,2})\s*$)?/gim;
 
-// Label from the code name: "ShiftLeft" -> "Shift", "NumpadAdd" -> "Add", "Digit1" -> "1".
+// Label from the code name: "ShiftLeft" -> "Shift", "NumpadAdd" -> "+", "Digit1" -> "1".
+// SHORT holds display abbreviations only (what is printed on a keycap), not key mappings.
+const SHORT = {
+  Escape: "Esc", BracketLeft: "[", BracketRight: "]", CapsLock: "Caps", Control: "Ctrl", PrintScreen: "PrtSc", ScrollLock: "ScrLk",
+  Insert: "Ins", Delete: "Del", PageUp: "PgUp", PageDown: "PgDn", ContextMenu: "Menu", NumLock: "Num",
+  ArrowUp: "↑", ArrowDown: "↓", ArrowLeft: "←", ArrowRight: "→", Add: "+", Subtract: "−", Multiply: "×", Divide: "÷",
+  Decimal: ".", Equal: "=", Enter: "Enter", Lang1: "かな", Lang2: "英数", KanaMode: "カナ", Convert: "変換", NonConvert: "無変換",
+};
 const label = (code, legend) => {
   if (legend) return legend[0].toUpperCase(); // unshifted legend: "aA" -> "A", "1!" -> "1"
-  return code.replace(/^(Key|Digit|Numpad|Arrow|Intl|Audio|Media|Browser|Launch)(?=.)/, "")
-    .replace(/(Left|Right)$/, "")
-    .replace(/([a-z])([A-Z])/g, "$1 $2");
+  if (SHORT[code]) return SHORT[code];
+  const side = code.match(/^(Shift|Control|Alt|Meta)(Left|Right)$/);
+  const base = side ? side[1] : code.replace(/^(Key|Digit|Numpad|Intl|Audio|Media|Browser|Launch)(?=.)/, "");
+  return SHORT[base] ?? base.replace(/([a-z])([A-Z])/g, "$1 $2");
 };
 
 const keys = [];
