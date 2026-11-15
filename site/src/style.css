@@ -18,7 +18,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; background: var(--paper); color: var(--ink); font: 17px/1.6 var(--font-ui); -webkit-font-smoothing: antialiased; }
-img { max-width: 100%; height: auto; display: block; }
+img, canvas { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
 h1, h2, h3 { line-height: 1.1; letter-spacing: -0.01em; font-weight: 600; }
 h2 { font-size: clamp(30px, 4.5vw, 44px); margin: 0 0 16px; }
@@ -92,7 +92,7 @@ section { padding: 72px 16px; max-width: var(--max); margin: 0 auto; }
 .feature { display: grid; grid-template-columns: 1fr 1.25fr; gap: 48px; align-items: center; margin: 32px 0 72px; }
 .feature.flip > div { order: 2; }
 .feature p { color: var(--muted); }
-.feature img { border-radius: var(--r); border: 1px solid var(--line); box-shadow: 0 24px 48px -32px rgb(0 0 0 / .5); }
+.feature canvas { width: 100%; background: var(--line); border-radius: var(--r); border: 1px solid var(--line); box-shadow: 0 24px 48px -32px rgb(0 0 0 / .5); }
 .facts { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; border-top: 1px solid var(--line); padding-top: 32px; }
 .facts li { color: var(--muted); font-size: 15px; }
 .facts strong { display: block; color: var(--ink); font: 500 34px/1.1 var(--font-key); margin-bottom: 4px; }
