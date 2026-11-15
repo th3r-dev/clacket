@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.4.1](https://github.com/th3r-dev/clacket/compare/v0.4.0...v0.4.1) (2026-11-15)
+
+
+### New features
+
+* one active device per license via online activation ([#31](https://github.com/th3r-dev/clacket/issues/31)) ([6b1991d](https://github.com/th3r-dev/clacket/commit/6b1991d42648d591a81d3d244a6c50172dc5064a))
+
+
+### Maintenance
+
+* release 0.4.1 ([59388c8](https://github.com/th3r-dev/clacket/commit/59388c895098bc1e2b2eb542ada0765fbfeb4e94))
+
 ## [0.4.0](https://github.com/th3r-dev/clacket/compare/v0.3.0...v0.4.0) (2026-11-15)
 
 
