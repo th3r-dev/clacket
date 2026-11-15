@@ -16,11 +16,9 @@
 </p>
 
 <p align="center">
-  <video src="https://github.com/th3r-dev/clacket/raw/main/docs/clacket-promo.mp4" poster="docs/images/promo-poster.jpg" width="760" controls muted playsinline>
-    <a href="https://github.com/th3r-dev/clacket/raw/main/docs/clacket-promo.mp4"><img src="docs/images/promo-poster.jpg" width="760" alt="Watch the Clacket demo (40 seconds)"></a>
-  </video>
+  <img src="docs/clacket-demo.gif" alt="Clacket: typing on a laptop keyboard that plays real mechanical switch sounds" width="820">
   <br>
-  <em>▶ <a href="https://github.com/th3r-dev/clacket/raw/main/docs/clacket-promo.mp4">Watch the 40-second demo</a> — or <a href="https://clacket.th33raphat.dev">try every switch in your browser</a>.</em>
+  <em>▶ <a href="https://github.com/th3r-dev/clacket/raw/main/docs/clacket-promo.mp4">Watch the full demo with sound (40s)</a> — or <a href="https://clacket.th33raphat.dev">try every switch in your browser</a>.</em>
 </p>
 
 <p align="center">
