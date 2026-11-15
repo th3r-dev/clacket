@@ -498,6 +498,8 @@ $("preset-delete").addEventListener("click", () => quiet(call("preset", { action
 function openUpgrade() { $("key-error").textContent = ""; if (!$("upgrade").open) $("upgrade").showModal(); }
 $("buy").addEventListener("click", () => quiet(invoke("open_link", { which: "buy" })));
 $("recover").addEventListener("click", () => quiet(invoke("open_link", { which: "recover" })));
+$("terms").addEventListener("click", () => quiet(invoke("open_link", { which: "terms" })));
+$("privacy").addEventListener("click", () => quiet(invoke("open_link", { which: "privacy" })));
 $("activate").addEventListener("click", async () => {
   try {
     const name = await call("activate_license", { key: $("key-input").value }, $("key-error"));

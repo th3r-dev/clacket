@@ -533,6 +533,8 @@ fn open_link(which: String) -> Result<(), String> {
     let url = match which.as_str() {
         "buy" => BUY_URL,
         "recover" => RECOVER_URL,
+        "terms" => "https://clacket.th33raphat.dev/terms",
+        "privacy" => "https://clacket.th33raphat.dev/privacy",
         #[cfg(target_os = "macos")]
         "permissions" => "x-apple.systempreferences:com.apple.preference.security?Privacy_ListenEvent",
         _ => return Err("Unknown link.".into()),

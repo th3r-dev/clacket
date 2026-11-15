@@ -120,6 +120,25 @@ section { padding: 72px 16px; max-width: var(--max); margin: 0 auto; }
 code { font: 14px ui-monospace, monospace; background: color-mix(in srgb, var(--ink) 8%, transparent); padding: 1px 6px; border-radius: 4px; }
 
 footer { border-top: 1px solid var(--line); padding: 28px 16px 48px; text-align: center; color: var(--muted); font-size: 14px; }
+footer a { text-underline-offset: 2px; }
+
+/* legal pages (terms, privacy) */
+.legal { max-width: 760px; margin: 0 auto; padding: 40px 16px 72px; }
+.lang-toggle { display: inline-flex; gap: 4px; padding: 4px; border: 1px solid var(--line); border-radius: 999px; background: var(--surface); margin-bottom: 32px; }
+.lang-btn { min-height: 40px; padding: 7px 20px; border: 0; border-radius: 999px; background: transparent; color: var(--muted); font: 600 15px var(--font-ui); cursor: pointer; }
+.lang-btn[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); }
+[data-lang="en"] .lang-th { display: none; }
+[data-lang="th"] .lang-en { display: none; }
+.doc h1 { font-size: clamp(32px, 6vw, 48px); margin: 0 0 6px; }
+.doc .updated { color: var(--muted); font-size: 15px; margin: 0 0 20px; }
+.doc .lede { font-size: 19px; color: var(--ink); max-width: none; margin: 0 0 8px; }
+.doc h2 { font-size: 24px; margin: 36px 0 10px; }
+.doc .summary { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 4px 24px 20px; margin-bottom: 8px; }
+.doc .summary h2 { margin-top: 20px; }
+.doc p { line-height: 1.7; }
+.doc ul { padding-left: 22px; color: var(--muted); }
+.doc li { margin-bottom: 6px; }
+.doc a[href^="http"], .doc a[href^="mailto"] { color: var(--accent); text-underline-offset: 2px; }
 
 @media (max-width: 760px) {
   .nav nav a:not(.btn) { display: none; }

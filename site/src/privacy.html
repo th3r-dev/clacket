@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en" data-lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Privacy Policy · Clacket</title>
+  <meta name="description" content="Privacy Policy for Clacket: the app is offline and collects nothing; what we store only when you buy Pro, and why. English and Thai.">
+  <link rel="icon" href="/img/icon-128.png">
+  <link rel="preload" href="/fonts/mali-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/legal.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#doc">Skip to the policy</a>
+
+  <header class="nav">
+    <a class="brand" href="/"><img src="/img/icon-128.png" alt="" width="32" height="32"><span>Clacket</span></a>
+    <nav aria-label="Sections">
+      <a href="/">Home</a>
+      <a href="/terms">Terms</a>
+    </nav>
+  </header>
+
+  <main class="legal" id="doc">
+    <div class="lang-toggle" role="group" aria-label="Language / ภาษา">
+      <button type="button" class="lang-btn" data-set="en" aria-pressed="true">English</button>
+      <button type="button" class="lang-btn" data-set="th" aria-pressed="false" lang="th">ไทย</button>
+    </div>
+
+    <!-- ENGLISH -->
+    <article class="doc lang-en" lang="en">
+      <h1>Privacy Policy</h1>
+      <p class="updated">Last updated: 15 November 2026</p>
+
+      <div class="summary">
+        <h2>The short version</h2>
+        <p>Clacket runs offline. It reads your keyboard and mouse only to play a sound on your own computer, and it never records, keeps or sends anything you type. No account, no analytics, no telemetry. The only time we hold any data about you is when you buy Pro, and then only what we need to give you a license and let you recover it. That's it.</p>
+      </div>
+
+      <h2>What the app collects: nothing</h2>
+      <p>Clacket works offline and never connects to the internet. When you type or move the mouse, it reads those events only to play the matching sound, and then it's done. It doesn't record what you type, keep it, or send it anywhere. The licence check also happens on your own computer, offline, using an Ed25519 signature.</p>
+
+      <h2>What we collect when you buy Pro</h2>
+      <p>To issue your license and let you recover it later, we store a few things in our database (Cloudflare D1):</p>
+      <ul>
+        <li>Your email and name, as you gave them to Stripe.</li>
+        <li>Your license key and its id.</li>
+        <li>The Stripe checkout and payment reference.</li>
+        <li>A flag for whether the key has been refunded.</li>
+        <li>The related timestamps.</li>
+      </ul>
+      <p>We keep this to issue your key, confirm the payment went through, and find your key for you if you lose it. We don't send marketing, and we don't sell or share your data with anyone.</p>
+
+      <h2>Stripe handles the payment</h2>
+      <p>Payment runs through Stripe. We never see or store your card details, those stay with Stripe. Your purchase is also covered by <a href="https://stripe.com/privacy">Stripe's own privacy policy</a>.</p>
+
+      <h2>We don't email you</h2>
+      <p>We don't send you any email. Your key appears on the "thanks" page right after you pay, and you can download it as a <code>clacket.license</code> file. "Lost your key?" is a help page, not an email from us. (Stripe may send you its own payment receipt, that one comes from Stripe.)</p>
+
+      <h2>The website and Cloudflare</h2>
+      <p>The website at clacket.th33raphat.dev is a static site hosted on Cloudflare. When someone visits, Cloudflare may keep standard request logs and security data as our processor. The in-browser demo loads sound and image files from our server, but we don't track visitors.</p>
+
+      <h2>No tracking cookies</h2>
+      <p>This site doesn't use cookies to track you.</p>
+
+      <h2>Refund and revocation</h2>
+      <p>When you ask for a refund, we set your license to revoked in our database. After that, the key can't unlock Pro on a new computer, and a future version of the app stops honouring it.</p>
+
+      <h2>How long we keep your data</h2>
+      <p>We keep the data tied to a license while the license is valid, and for as long as we need it for support and accounting.</p>
+
+      <h2>Your rights</h2>
+      <p>You can ask to see, correct or delete the data we hold about you, just email us. (If you have us delete your license data, we may no longer be able to recover your key for you later.)</p>
+
+      <h2>Not for children</h2>
+      <p>Clacket isn't aimed at children, and we don't set out to collect children's data.</p>
+
+      <h2>Changes to this policy</h2>
+      <p>If this policy changes, we update the "last updated" date at the top.</p>
+
+      <h2>Contact</h2>
+      <p>Questions about your data, or want to see, correct or delete it? Email <a href="mailto:th33raphat@gmail.com">th33raphat@gmail.com</a>.</p>
+    </article>
+
+    <!-- THAI -->
+    <article class="doc lang-th" lang="th">
+      <h1>นโยบายความเป็นส่วนตัว</h1>
+      <p class="updated">อัปเดตล่าสุด 15 พฤศจิกายน 2026</p>
+
+      <div class="summary">
+        <h2>สรุปสั้นๆ</h2>
+        <p>Clacket ทำงานแบบออฟไลน์ อ่านการกดคีย์บอร์ดและเมาส์แค่เพื่อเล่นเสียงบนเครื่องของคุณเอง ไม่เคยอัด ไม่เก็บ และไม่ส่งอะไรที่คุณพิมพ์ออกไปไหน ไม่มีบัญชีผู้ใช้ ไม่มี analytics ไม่มี telemetry เราจะมีข้อมูลของคุณก็ต่อเมื่อคุณซื้อ Pro และเก็บแค่เท่าที่จำเป็นต่อการออก license ให้คุณและให้คุณกู้คืนได้ แค่นั้น</p>
+      </div>
+
+      <h2>ตัวแอปเก็บอะไรบ้าง: ไม่เก็บอะไรเลย</h2>
+      <p>Clacket ทำงานแบบออฟไลน์ ไม่เคยต่ออินเทอร์เน็ต เวลาคุณพิมพ์หรือขยับเมาส์ แอปจะอ่าน event พวกนั้นแค่เพื่อเล่นเสียงให้ตรง แล้วก็จบตรงนั้น ไม่มีการอัดสิ่งที่คุณพิมพ์ ไม่เก็บ และไม่ส่งไปไหน การตรวจ license ก็ทำบนเครื่องของคุณเอง แบบออฟไลน์ ด้วยลายเซ็น Ed25519</p>
+
+      <h2>ตอนคุณซื้อ Pro เราเก็บอะไรบ้าง</h2>
+      <p>เพื่อออก license ให้คุณ และให้คุณกู้คืนได้ทีหลัง เราเก็บข้อมูลไม่กี่อย่างไว้ในฐานข้อมูลของเรา (Cloudflare D1)</p>
+      <ul>
+        <li>อีเมลและชื่อ ตามที่คุณกรอกให้ Stripe</li>
+        <li>license key และ id ของมัน</li>
+        <li>เลขอ้างอิงการชำระเงินและ checkout จาก Stripe</li>
+        <li>สถานะว่า key นี้ถูกคืนเงินไปแล้วหรือยัง</li>
+        <li>วันเวลาที่เกี่ยวข้อง</li>
+      </ul>
+      <p>เราเก็บเท่านี้เพื่อออก key ให้ ยืนยันว่าการจ่ายเงินสำเร็จ และหา key ให้ตอนคุณทำหาย เราไม่ส่งโฆษณา และไม่ขายหรือแบ่งข้อมูลของคุณให้ใคร</p>
+
+      <h2>การจ่ายเงินอยู่กับ Stripe</h2>
+      <p>การจ่ายเงินทำผ่าน Stripe เราไม่เห็นและไม่เก็บข้อมูลบัตรของคุณ เพราะข้อมูลบัตรอยู่กับ Stripe ทั้งหมด การซื้อของคุณอยู่ภายใต้<a href="https://stripe.com/privacy">นโยบายความเป็นส่วนตัวของ Stripe</a>เองด้วย</p>
+
+      <h2>เราไม่ส่งอีเมลหาคุณ</h2>
+      <p>เราไม่ส่งอีเมลหาคุณเลย key ของคุณจะโชว์บนหน้า "ขอบคุณ" ทันทีหลังจ่ายเงิน แล้วโหลดเก็บเป็นไฟล์ <code>clacket.license</code> ได้ ส่วน "ทำ key หาย?" เป็นหน้าช่วยเหลือ ไม่ใช่อีเมลจากเรา (แต่ Stripe อาจส่งใบเสร็จการจ่ายเงินมาให้คุณเอง อันนั้นมาจาก Stripe)</p>
+
+      <h2>เว็บไซต์กับ Cloudflare</h2>
+      <p>เว็บไซต์ clacket.th33raphat.dev เป็นเว็บแบบ static วางอยู่บน Cloudflare พอมีคนเข้าเว็บ Cloudflare อาจเก็บ log การเข้าใช้งานและข้อมูลด้านความปลอดภัยตามมาตรฐานทั่วไป ในฐานะผู้ประมวลผลข้อมูลแทนเรา ตัว demo ในเบราว์เซอร์จะโหลดไฟล์เสียงและรูปจากเซิร์ฟเวอร์ของเรา แต่เราไม่ได้ตามเก็บข้อมูลคนที่เข้าชม</p>
+
+      <h2>ไม่มีคุกกี้ติดตาม</h2>
+      <p>เว็บนี้ไม่ใช้คุกกี้เพื่อตามรอยคุณ</p>
+
+      <h2>การคืนเงินกับการยกเลิก key</h2>
+      <p>พอคุณขอคืนเงิน เราจะตั้ง license ของคุณเป็นสถานะยกเลิกในฐานข้อมูล หลังจากนั้น key นั้นจะเปิด Pro บนเครื่องใหม่ไม่ได้ และแอปเวอร์ชันถัดไปก็จะไม่รับ key นั้นแล้ว</p>
+
+      <h2>เราเก็บข้อมูลไว้นานแค่ไหน</h2>
+      <p>เราเก็บข้อมูลที่ผูกกับ license ไว้ตราบที่ license ยังใช้ได้ และเท่าที่จำเป็นสำหรับการช่วยเหลือและการทำบัญชี</p>
+
+      <h2>สิทธิ์ของคุณ</h2>
+      <p>คุณขอดู ขอแก้ หรือขอลบข้อมูลที่เรามีเกี่ยวกับคุณได้ แค่อีเมลมาหาเรา (แต่ถ้าให้เราลบข้อมูล license ออก เราก็อาจกู้ key ให้คุณทีหลังไม่ได้)</p>
+
+      <h2>ไม่ได้ทำมาเพื่อเด็ก</h2>
+      <p>Clacket ไม่ได้ทำมาเพื่อเด็ก และเราไม่ได้ตั้งใจเก็บข้อมูลของเด็ก</p>
+
+      <h2>การเปลี่ยนแปลงนโยบายนี้</h2>
+      <p>ถ้านโยบายนี้มีการแก้ เราจะเปลี่ยนวันที่ "อัปเดตล่าสุด" ด้านบน</p>
+
+      <h2>ติดต่อเรา</h2>
+      <p>มีคำถามเรื่องข้อมูลของคุณ หรืออยากขอดู แก้ หรือลบ อีเมลมาที่ <a href="mailto:th33raphat@gmail.com">th33raphat@gmail.com</a></p>
+    </article>
+  </main>
+
+  <footer>
+    <p><a href="/terms">Terms</a> · <a href="/privacy">Privacy</a> · <a href="/">Clacket</a></p>
+  </footer>
+</body>
+</html>
