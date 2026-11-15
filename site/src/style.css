@@ -134,3 +134,36 @@ footer { border-top: 1px solid var(--line); padding: 28px 16px 48px; text-align:
   * { transition: none !important; }
   .k.down { transform: none; }
 }
+
+/* "What we use the internet for" trust section */
+.trust { text-align: left; }
+.trust > h2 { text-align: center; }
+.trust-points { list-style: none; padding: 0; margin: 24px 0 16px; display: grid; gap: 16px; }
+.trust-points li { color: var(--muted); font-size: 17px; line-height: 1.6; padding-left: 18px; border-left: 2px solid var(--accent); }
+.trust-points strong { color: var(--ink); font-weight: 600; }
+.trust .fine { text-align: left; font-size: 14px; }
+.trust .fine a, .foot-links a { color: var(--accent); text-decoration: none; }
+.trust-th { margin-top: 36px; padding-top: 28px; border-top: 1px solid var(--line); }
+.trust-th h3 { font-family: var(--font-key); font-weight: 500; font-size: 20px; margin: 0 0 8px; text-align: center; }
+.foot-links { margin: 0 0 10px; }
+
+/* Legal pages (privacy, terms) with a CSS-only EN/ไทย toggle (CSP blocks inline JS) */
+.legal { max-width: 760px; margin: 0 auto; }
+.legal h1 { font-size: clamp(28px, 4vw, 38px); margin: 0 0 6px; }
+.legal h2 { font-size: 21px; margin: 32px 0 8px; }
+.legal p, .legal li { color: var(--muted); }
+.legal p { margin: 0 0 12px; }
+.legal ul { padding-left: 20px; margin: 0 0 12px; }
+.legal li { margin: 0 0 6px; }
+.legal .updated { font-size: 14px; }
+.legal a { color: var(--accent); }
+.langbar { display: flex; gap: 8px; margin: 18px 0 28px; }
+.langbar label { cursor: pointer; padding: 6px 16px; min-height: 40px; display: inline-flex; align-items: center;
+  border: 1px solid var(--line); border-radius: 999px; color: var(--muted); font-size: 15px; }
+.lang-switch:focus-visible ~ .langbar label[for] { outline: 3px solid var(--accent); outline-offset: 3px; }
+.langbar .lang-en { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.lang-th-only { display: none; }
+.lang-switch:checked ~ .langbar .lang-en { background: transparent; color: var(--muted); border-color: var(--line); }
+.lang-switch:checked ~ .langbar .lang-th { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.lang-switch:checked ~ .lang-en-only { display: none; }
+.lang-switch:checked ~ .lang-th-only { display: block; }

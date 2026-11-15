@@ -28,6 +28,12 @@ uuid = { version = "1", features = ["v4"] }
 fastrand = "2"
 flate2 = "1"
 chacha20 = "0.10"
+# Online license activation: the one HTTP client (blocking, rustls — no OS certs, no async runtime),
+# a stable per-machine id, its hash, and a best-effort host name for the device label.
+ureq = { version = "=2.12.1", default-features = false, features = ["tls", "json"] }
+machine-uid = "=0.6.0"
+sha2 = "=0.11.1" # matches the runtime sha2 ed25519-dalek already links, so no extra copy
+hostname = "=0.4.2"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 core-foundation = "0.10"

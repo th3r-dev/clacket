@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light dark">
   <title>Clacket: mechanical keyboard sounds for any keyboard</title>
-  <meta name="description" content="Clacket plays real mechanical switch recordings as you type, on macOS, Windows and Linux. 13 switches, a sound for any key, mouse and plug-in sounds. Never connects to the internet.">
+  <meta name="description" content="Clacket plays real mechanical switch recordings as you type, on macOS, Windows and Linux. 13 switches, a sound for any key, mouse and plug-in sounds. Connects only to activate your license, one device at a time; never sends what you type.">
   <meta property="og:title" content="Clacket: every key, a little clack">
   <meta property="og:description" content="Mechanical keyboard sounds for the keyboard you already have. Try every switch in your browser.">
   <meta property="og:image" content="https://clacket.th33raphat.dev/img/social-preview.png">
@@ -32,7 +32,7 @@
   <main>
     <section class="hero">
       <h1>Every key,<br>a little <em>clack</em>.</h1>
-      <p class="lede">Clacket plays real mechanical switch recordings as you type, on the keyboard you already have. It lives in your menu bar, uses almost nothing, and never connects to the internet.</p>
+      <p class="lede">Clacket plays real mechanical switch recordings as you type, on the keyboard you already have. It lives in your menu bar, uses almost nothing, and goes online only to activate your license. It never sends what you type.</p>
       <div class="cta">
         <a class="btn" href="#download">Download free</a>
         <a class="btn ghost" href="#demo">Hear it first</a>
@@ -84,7 +84,7 @@
         <li><strong>23 MB</strong> of memory while it waits</li>
         <li><strong>0%</strong> CPU when you're not typing</li>
         <li><strong>5 MB</strong> program, every sound built in</li>
-        <li><strong>0</strong> network connections, ever</li>
+        <li><strong>0</strong> network calls once your license is active</li>
       </ul>
     </section>
 
@@ -111,14 +111,29 @@
             <li>Plug-in sounds for USB, chargers, displays and headphones</li>
           </ul>
           <a class="btn" id="buy" href="https://buy.stripe.com/dRm00l3J6bkdatA9P32kw00" target="_blank" rel="noopener">Get Pro – $5</a>
-          <p class="fine">Pay in your browser, get your key on the spot. Clacket checks it on your computer, offline.</p>
+          <p class="fine">Pay in your browser, get your key on the spot. Clacket activates it on one device, then runs offline. Move it to another computer anytime by deactivating first.</p>
         </div>
       </div>
     </section>
 
-    <section class="privacy" aria-labelledby="privacy-title">
-      <h2 id="privacy-title">It never phones home</h2>
-      <p>Clacket listens to your keys only to play a sound. It doesn't record what you type, keep it, or send anything anywhere. There is no account, no analytics and no update check. The build fails if networking code gets into the app.</p>
+    <section class="privacy trust" aria-labelledby="privacy-title">
+      <h2 id="privacy-title">What we use the internet for</h2>
+      <ul class="trust-points">
+        <li><strong>To unlock or move your license.</strong> Clacket contacts our server once when you activate Pro, and again if you move it to another device. That's the only time it goes online.</li>
+        <li><strong>Never for what you type.</strong> It never records, stores, or sends your keystrokes. No analytics, no telemetry, no tracking.</li>
+        <li><strong>Then it's offline.</strong> After activation Clacket runs with no network at all. Only the app's backend ever makes that one call, to one server (pay.th33raphat.dev), and the settings window itself can't reach the internet.</li>
+      </ul>
+      <p class="fine">At activation Clacket sends only your license key and a salted device fingerprint (a one-way hash, not personal data you can read). Nothing else. More in the <a href="/privacy">Privacy Policy</a>.</p>
+
+      <div class="trust-th" lang="th">
+        <h3>Clacket ใช้อินเทอร์เน็ตตอนไหนบ้าง</h3>
+        <ul class="trust-points">
+          <li><strong>ตอนเปิดหรือย้ายไลเซนส์</strong> พอเปิด Pro Clacket จะต่อไปที่เซิร์ฟเวอร์ของเราครั้งเดียว แล้วต่ออีกครั้งตอนย้ายไปเครื่องอื่น นอกจากนี้ก็ไม่ได้ออกเน็ตอีกเลย</li>
+          <li><strong>ไม่เคยส่งสิ่งที่คุณพิมพ์</strong> ไม่มีการอัด เก็บ หรือส่งการกดแป้นของคุณออกไป ไม่มี analytics ไม่มี telemetry ไม่มีการติดตามใด ๆ</li>
+          <li><strong>จากนั้นก็ทำงานออฟไลน์</strong> หลังเปิดใช้งานแล้ว Clacket ไม่ต่อเน็ตเลย มีแค่ตัวแอปเบื้องหลังที่ต่อครั้งเดียวนั้น ไปที่เซิร์ฟเวอร์เดียว (pay.th33raphat.dev) ส่วนหน้าต่างตั้งค่าเองออกเน็ตไม่ได้</li>
+        </ul>
+        <p class="fine">ตอนเปิดใช้งาน Clacket ส่งแค่ license key กับลายนิ้วมือเครื่องที่ผ่านการแฮช (เป็นค่าแฮชทางเดียว อ่านกลับเป็นข้อมูลส่วนตัวไม่ได้) เท่านั้น ไม่มีอย่างอื่น อ่านเพิ่มได้ใน<a href="/privacy">นโยบายความเป็นส่วนตัว</a></p>
+      </div>
     </section>
 
     <section id="download" class="download" aria-labelledby="download-title">
@@ -138,6 +153,7 @@
   </main>
 
   <footer>
+    <p class="foot-links"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
     <p>Clacket · Switch recordings from kbsim (MIT). Effects from Kenney (CC0). Fonts: Mali and Kanit (SIL OFL).</p>
   </footer>
 </body>

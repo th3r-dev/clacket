@@ -417,7 +417,9 @@ function renderSound() {
   $("launch_at_login").checked = S.settings.launch_at_login;
   $("shortcut").textContent = S.platform === "macos" ? "⌥ ⌘ K" : "Ctrl + Alt + K";
   $("license").replaceChildren(...(S.pro
-    ? [h("p", { text: `Pro · Licensed to ${S.licensed_to}` }), h("button", { text: "Remove license", onclick: () => quiet(call("remove_license")) })]
+    ? [h("p", { text: `Pro · Licensed to ${S.licensed_to}` }),
+       h("button", { id: "deactivate", text: "Deactivate this device", onclick: deactivateClick }),
+       h("p", { class: "hint", text: "Frees this key so you can use it on another computer." })]
     : [h("p", { class: "hint", text: "Free: 4 switches and the basics." }), h("button", { class: "primary", text: "Upgrade – $5", onclick: openUpgrade })]));
 }
 
@@ -494,17 +496,37 @@ $("preset-save").addEventListener("click", () => ask("Save as new preset", "", (
 $("preset-rename").addEventListener("click", () => ask("Rename preset", S.settings.active_preset, (to) => invoke("preset", { action: "rename", name: S.settings.active_preset, newName: to })));
 $("preset-delete").addEventListener("click", () => quiet(call("preset", { action: "delete", name: S.settings.active_preset })));
 
+// Activation runs on the server (one device per key), so the app shows progress and waits for the
+// `license-result` event rather than a direct return. Messages the UI shows for each outcome:
+const LICENSE_MSG = {
+  in_use: "This key is already active on another device. Open Clacket there and click “Deactivate this device,” then try again.",
+  offline: "Clacket couldn’t reach the license server. Connect to the internet and try again.",
+  invalid: "This key isn’t valid. Copy the whole key, starting with CLACKET-.",
+  revoked: "This key was refunded, so it can’t turn on Pro.",
+};
+
+function setActivating(on) {
+  const b = $("activate");
+  b.disabled = on;
+  b.textContent = on ? "Activating…" : "Activate key";
+  if (on) $("key-error").textContent = "";
+}
+
+function deactivateClick() {
+  const b = $("deactivate");
+  if (b) { b.disabled = true; b.textContent = "Deactivating…"; }
+  quiet(invoke("remove_license"));
+}
+
 // upgrade dialog
 function openUpgrade() { $("key-error").textContent = ""; if (!$("upgrade").open) $("upgrade").showModal(); }
 $("buy").addEventListener("click", () => quiet(invoke("open_link", { which: "buy" })));
 $("recover").addEventListener("click", () => quiet(invoke("open_link", { which: "recover" })));
-$("activate").addEventListener("click", async () => {
-  try {
-    const name = await call("activate_license", { key: $("key-input").value }, $("key-error"));
-    $("upgrade").close();
-    $("key-input").value = "";
-    banner(`Clacket Pro is on. Licensed to ${name}. Thanks!`, null);
-  } catch {}
+$("activate").addEventListener("click", () => {
+  const key = $("key-input").value.trim();
+  if (!key) { $("key-error").textContent = "Paste your key, or drop your clacket.license file here."; return; }
+  setActivating(true);
+  quiet(invoke("activate_license", { key })); // result arrives as a license-result event
 });
 const ta = $("key-input");
 ta.addEventListener("dragover", (e) => { e.preventDefault(); ta.classList.add("drop"); });
@@ -519,9 +541,19 @@ ta.addEventListener("drop", async (e) => {
 // ---------- live events ----------
 listen("state-changed", refresh);
 listen("show-upgrade", openUpgrade);
+listen("activating", () => { openUpgrade(); setActivating(true); }); // from a clacket://activate deep link
 listen("license-result", (e) => {
-  if (e.payload.Ok) banner(`Clacket Pro is on. Licensed to ${e.payload.Ok}. Thanks!`, null);
-  else { openUpgrade(); $("key-error").textContent = e.payload.Err; }
+  const r = e.payload;
+  if (r.action === "deactivate") {
+    banner(r.ok
+      ? "Pro is off on this device. Your key is free to use on another computer."
+      : "Clacket couldn’t reach the license server, so Pro is still on here. Moving a license has to happen online — connect to the internet and try again.", null);
+    refresh(); // restore the Deactivate button
+    return;
+  }
+  setActivating(false);
+  if (r.ok) { $("upgrade").close(); $("key-input").value = ""; banner(`Clacket Pro is on. Licensed to ${r.name}. Thanks!`, null); }
+  else { openUpgrade(); $("key-error").textContent = LICENSE_MSG[r.error] || "Activation didn’t work. Try again."; }
 });
 listen("device-event", (e) => { $("last-event").textContent = e.payload; });
 listen("import-error", (e) => { const m = Array.isArray(e.payload) ? e.payload[1] : String(e.payload); banner(m, null); });
