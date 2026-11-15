@@ -1,1 +1,134 @@
 <!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Clacket</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <div class="titlebar" data-tauri-drag-region aria-hidden="true"></div>
+  <header class="top" data-tauri-drag-region>
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 1024 1024" aria-hidden="true"><rect class="m-bg" width="1024" height="1024" rx="228"/><rect class="m-cap" x="212" y="300" width="460" height="460" rx="84"/><rect class="m-top" x="262" y="330" width="360" height="330" rx="56"/><path class="m-arc" d="M740 420a150 150 0 0 1 0 220"/></svg>
+      <span class="wordmark">Clacket</span>
+      <span class="badge" id="pro-badge" hidden>Pro</span>
+    </div>
+    <label class="preset-pick">
+      <span class="label">Preset</span>
+      <select id="preset"></select>
+    </label>
+    <label class="power">
+      <input type="checkbox" id="enabled" role="switch">
+      <span class="track" aria-hidden="true"><span class="thumb"></span></span>
+      <span id="enabled-text">On</span>
+    </label>
+  </header>
+
+  <div id="banners" aria-live="polite"></div>
+
+  <nav class="tabs" role="tablist" aria-label="Settings sections">
+    <button role="tab" id="tab-keyboard" aria-controls="panel-keyboard" aria-selected="true">Keyboard</button>
+    <button role="tab" id="tab-mouse" aria-controls="panel-mouse" aria-selected="false" tabindex="-1">Mouse &amp; devices</button>
+    <button role="tab" id="tab-sound" aria-controls="panel-sound" aria-selected="false" tabindex="-1">Sound &amp; options</button>
+  </nav>
+
+  <main>
+    <section role="tabpanel" id="panel-keyboard" aria-labelledby="tab-keyboard">
+      <div class="kb-bar">
+        <p class="layout-note"><span id="layout-name"></span> <button class="link" id="layout-change">Change</button></p>
+        <select id="layout-select" hidden aria-label="Keyboard layout">
+          <option value="">Detected</option><option value="ansi">ANSI</option><option value="iso">ISO</option><option value="jis">JIS</option>
+        </select>
+        <div class="preset-actions">
+          <button id="preset-save">Save as new preset…</button>
+          <button id="preset-rename">Rename…</button>
+          <button id="preset-delete">Delete</button>
+        </div>
+      </div>
+      <div class="kb-wrap">
+        <div id="keyboard" role="grid" aria-label="Keyboard. Use arrow keys to move, Space to select, Shift to add to the selection."></div>
+        <aside class="side" id="side" aria-live="polite"></aside>
+      </div>
+    </section>
+
+    <section role="tabpanel" id="panel-mouse" aria-labelledby="tab-mouse" hidden>
+      <div id="mouse-upsell"></div>
+      <h2>Mouse &amp; trackpad</h2>
+      <div class="sliders">
+        <label>Scroll sensitivity <input type="range" id="scroll_sensitivity" min="0" max="1" step="0.05"></label>
+        <label>Movement volume <input type="range" id="move_volume" min="0" max="1" step="0.05"></label>
+        <label class="check" id="haptic-row"><input type="checkbox" id="haptic"> Haptic tick on scroll and gestures <span class="hint">Force Touch trackpads</span></label>
+      </div>
+      <div class="rows" id="mouse-rows"></div>
+      <h2>Devices</h2>
+      <p class="last-event">Last event: <span id="last-event">Nothing plugged in or out yet.</span></p>
+      <div class="rows" id="device-rows"></div>
+    </section>
+
+    <section role="tabpanel" id="panel-sound" aria-labelledby="tab-sound" hidden>
+      <div class="sound-layout">
+        <div>
+          <div id="switches" role="radiogroup" aria-label="Switch. Choosing one plays its sound."></div>
+          <div class="try-box">
+            <label for="try">Try it</label>
+            <input id="try" type="text" autocomplete="off" spellcheck="false" placeholder="Type here to hear your switch">
+            <div class="caps" id="caps" aria-hidden="true"><span class="placeholder">Keys you type show up here.</span></div>
+          </div>
+        </div>
+        <div class="options">
+          <h2>Options</h2>
+          <label class="field" for="volume">Volume
+            <span class="vol-row"><input type="range" id="volume" min="0" max="1" step="0.05"><output id="volume-out" for="volume"></output></span>
+          </label>
+          <label class="check"><input type="checkbox" id="keyup_sound"> Key-up sound</label>
+          <label class="check"><input type="checkbox" id="launch_at_login"> Open at login</label>
+          <p class="hint">Turn sounds on or off from anywhere: <kbd id="shortcut"></kbd></p>
+          <h2>License</h2>
+          <div id="license"></div>
+          <h2>About</h2>
+          <p class="hint">Clacket never connects to the internet. Switch sounds from kbsim by Thomas Lai (MIT). Mouse, gesture and plug sounds from Kenney (CC0). Key table from Chromium (BSD). Fonts: Mali and Kanit (SIL OFL).</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="upgrade" aria-labelledby="upgrade-title">
+    <form method="dialog" class="dialog-body" id="upgrade-form">
+      <h2 id="upgrade-title">Clacket Pro</h2>
+      <p class="price">$5 once. Yours for good.</p>
+      <ul class="adds">
+        <li>All 13 switches</li>
+        <li>A sound for any key, saved as presets</li>
+        <li>Mouse, trackpad and gesture sounds</li>
+        <li>Plug-in sounds for USB, chargers, displays and headphones</li>
+      </ul>
+      <button type="button" class="primary" id="buy">Upgrade – $5</button>
+      <p class="hint">Opens your browser to pay. Your key arrives by email.</p>
+      <label class="field" for="key-input">Have a key? Paste it, or drop your clacket.license file here.</label>
+      <textarea id="key-input" rows="3" spellcheck="false" autocomplete="off"></textarea>
+      <p class="error" id="key-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button type="button" class="link" id="recover">Lost your key?</button>
+        <button value="cancel">Close</button>
+        <button type="button" class="primary" id="activate">Activate key</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="ask" aria-labelledby="ask-title">
+    <form method="dialog" class="dialog-body">
+      <h2 id="ask-title"></h2>
+      <label class="field" for="ask-input" id="ask-label">Name</label>
+      <input id="ask-input" maxlength="40" autocomplete="off">
+      <p class="error" id="ask-error" role="alert"></p>
+      <div class="dialog-actions">
+        <button value="cancel" formnovalidate>Cancel</button>
+        <button class="primary" value="ok" id="ask-ok">Save</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>
