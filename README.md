@@ -69,6 +69,8 @@ Download the installer for your system from [Releases](../../releases/latest): `
 
 [clacket.th33raphat.dev](https://clacket.th33raphat.dev) is a static Cloudflare Worker built from `site/`. It has a live demo that plays the same recordings in the browser, and it hosts the installers, since this repo is private. `scripts/build-site.sh` assembles it from the app's sounds, fonts and screenshots and the latest release's installers. Each release redeploys it.
 
+The demo's recordings and the screenshots ship as AES-GCM blobs under `/a/`, with a fresh key each build (`scripts/pack-site.mjs`). The page decrypts them in memory, plays the sound with Web Audio and draws the screenshots on a canvas. `site/worker.js` serves `/a/*` only to the page's own `fetch()`, so a blob URL opened in a tab, hotlinked or curled gets a 404. This stops casual downloads. Anyone can still record what the browser plays or shows. The Open Graph image and the favicon stay plain files.
+
 ```sh
 scripts/build-site.sh && (cd site && npx wrangler deploy)
 ```
