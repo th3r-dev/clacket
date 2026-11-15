@@ -1,9 +1,11 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Clacket",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "identifier": "app.clacket",
-  "build": { "frontendDist": "../ui" },
+  "build": {
+    "frontendDist": "../ui"
+  },
   "app": {
     "withGlobalTauri": true,
     "windows": [],
@@ -13,14 +15,34 @@
   },
   "bundle": {
     "active": true,
-    "targets": ["app", "dmg", "msi", "deb", "appimage"],
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.icns", "icons/icon.ico"],
+    "targets": [
+      "app",
+      "dmg",
+      "msi",
+      "deb",
+      "appimage"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.icns",
+      "icons/icon.ico"
+    ],
     "category": "Utility",
     "shortDescription": "Mechanical keyboard sounds while you type",
     "copyright": "Sound credits: kbsim (MIT), Kenney (CC0)",
-    "macOS": { "minimumSystemVersion": "11.0" }
+    "macOS": {
+      "minimumSystemVersion": "11.0"
+    }
   },
   "plugins": {
-    "deep-link": { "desktop": { "schemes": ["clacket"] } }
+    "deep-link": {
+      "desktop": {
+        "schemes": [
+          "clacket"
+        ]
+      }
+    }
   }
 }
