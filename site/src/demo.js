@@ -47,14 +47,15 @@ async function loadBank(id) {
     const [phase, name] = path.split("/");
     const kind = name.startsWith("GENERIC") ? "GENERIC" : name;
     const buf = await audio().decodeAudioData(await (await fetch(`/sounds/${id}/${path}.mp3`)).arrayBuffer());
-    (bank[phase][kind] ??= []).push(buf);
+    bank[phase][kind] ??= [];
+    bank[phase][kind].push(buf);
   }));
-  return (banks[id] = bank);
+  banks[id] = bank;
+  return bank;
 }
 
-function kindOf(code) {
-  return code === "Space" ? "SPACE" : code === "Enter" ? "ENTER" : code === "Backspace" ? "BACKSPACE" : "GENERIC";
-}
+const KIND = { Space: "SPACE", Enter: "ENTER", Backspace: "BACKSPACE" };
+const kindOf = (code) => KIND[code] ?? "GENERIC";
 
 function play(code, down) {
   if (muted) return;
@@ -144,7 +145,10 @@ addEventListener("keyup", (e) => {
   light(e.code, false);
   play(e.code, false);
 });
-addEventListener("blur", () => { for (const c of held) light(c, false); held.clear(); });
+addEventListener("blur", () => {
+  for (const c of held) light(c, false);
+  held.clear();
+});
 
 $("vol").addEventListener("input", (e) => { if (master) master.gain.value = +e.target.value; });
 $("mute").addEventListener("click", (e) => {
@@ -154,7 +158,8 @@ $("mute").addEventListener("click", (e) => {
 });
 
 // lead with the visitor's own platform
-const os = /Mac/.test(navigator.platform) ? "mac" : /Win/.test(navigator.platform) ? "windows" : /Linux/.test(navigator.platform) ? "linux" : "";
+const ua = navigator.userAgentData?.platform ?? navigator.userAgent;
+const os = [["mac", /Mac/], ["windows", /Win/], ["linux", /Linux|X11/]].find(([, re]) => re.test(ua))?.[0] ?? "";
 const mine = document.querySelector(`.dl [data-os="${os}"]`);
 if (mine) {
   for (const a of document.querySelectorAll(".dl .btn")) a.classList.add("ghost");
@@ -162,4 +167,4 @@ if (mine) {
   mine.parentElement.prepend(mine);
 }
 
-pick("cream");
+pick("cream").catch(() => {}); // sounds load lazily; a failed preload retries on first key

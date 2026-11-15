@@ -39,15 +39,16 @@ EOF
 LIMIT=$((25 * 1024 * 1024)) # Workers static assets: 25 MiB per file
 tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
 if tag=$(gh release view --json tagName --jq .tagName 2>/dev/null); then
-  gh release download "$tag" --dir "$tmp" --pattern '*.dmg' --pattern '*-setup.exe' --pattern '*.AppImage' --pattern '*.deb' 2>/dev/null || true
+  gh release download "$tag" --dir "$tmp" --pattern '*.dmg' --pattern '*.msi' --pattern '*.AppImage' --pattern '*.deb' 2>/dev/null || true
   put() { # put <glob> <name>
     local f; f=$(ls "$tmp"/$1 2>/dev/null | head -1) || true
     if [[ -z "$f" ]]; then echo "download: no $1 in $tag"; return; fi
     if (( $(stat -f%z "$f" 2>/dev/null || stat -c%s "$f") > LIMIT )); then echo "download: $(basename "$f") is over 25 MiB, skipped"; return; fi
-    cp "$f" "$OUT/download/$2"; echo "download: $2 <- $(basename "$f")"
+    cp "$f" "$OUT/download/$2"
+    echo "download: $2 <- $(basename "$f")"
   }
   put '*universal.dmg' Clacket-macos-universal.dmg
-  put '*-setup.exe' Clacket-windows-x64-setup.exe
+  put '*.msi' Clacket-windows-x64.msi
   put '*.AppImage' Clacket-linux-amd64.AppImage
   put '*.deb' Clacket-linux-amd64.deb
   sed -i.bak "s|<span id=\"version\">[^<]*</span>|<span id=\"version\">${tag#v}</span>|" "$OUT"/index.html && rm "$OUT"/index.html.bak
