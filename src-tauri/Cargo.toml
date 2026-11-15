@@ -8,8 +8,8 @@ license = "MIT"
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
 flate2 = "1"
-chacha20 = "0.9"
-getrandom = "0.3"
+chacha20 = "0.10"
+getrandom = "0.4"
 
 [dependencies]
 tauri = { version = "2", features = ["tray-icon", "image-png"] }
@@ -22,19 +22,18 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 toon-format = { version = "0.7", default-features = false }
 rodio = { version = "0.21", default-features = false, features = ["playback", "mp3", "wav"] }
-ed25519-dalek = "2"
+ed25519-dalek = "3"
 data-encoding = "2"
 uuid = { version = "1", features = ["v4"] }
 fastrand = "2"
 flate2 = "1"
-chacha20 = "0.9"
+chacha20 = "0.10"
 
 [target.'cfg(target_os = "macos")'.dependencies]
-core-graphics = "0.24"
 core-foundation = "0.10"
 objc2 = "0.6"
 objc2-app-kit = { version = "0.3", features = ["NSHapticFeedback", "NSWindow", "NSButton", "NSControl", "NSView", "NSResponder", "NSAnimation"] }
-io-kit-sys = "0.4"
+io-kit-sys = "0.5"
 
 [target.'cfg(target_os = "linux")'.dependencies]
 evdev = "0.13"
