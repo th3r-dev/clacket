@@ -402,23 +402,44 @@ fn set_event_on(app: AppState, ids: Vec<String>, on: bool) -> Result<(), String>
     })
 }
 
-/// Opens a file picker, checks the file, copies it into Clacket's folder, assigns it.
+/// Opens the picker without blocking: a blocking file dialog freezes the webview/main thread on
+/// macOS (the app stops responding after Cancel). The callback does the import off the UI thread,
+/// then the result reaches the window as `import-done` / `import-error` events.
 #[tauri::command]
-fn import_sound(app: AppState, h: AppHandle, ids: Vec<String>) -> Result<bool, String> {
+fn import_sound(app: AppState, h: AppHandle, ids: Vec<String>) -> Result<(), String> {
     if !app.pro() {
         return Err(PRO_REQUIRED.into());
     }
-    let Some(path) = h.dialog().file().add_filter("Audio", &["mp3", "wav"]).blocking_pick_file() else {
-        return Ok(false); // cancelled
-    };
-    let path = path.into_path().map_err(|_| "Can't open that file.".to_string())?;
-    audio::validate_file(&path)?;
-    let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("wav").to_ascii_lowercase();
-    let name = format!("{}.{ext}", uuid::Uuid::new_v4());
-    std::fs::create_dir_all(&app.sounds_dir).map_err(|e| e.to_string())?;
-    std::fs::copy(&path, app.sounds_dir.join(&name)).map_err(|e| format!("Couldn't copy the file: {e}"))?;
-    set_sound(app, ids, Some(SoundRef::File { file: name }))?;
-    Ok(true)
+    let handle = h.clone();
+    h.dialog().file().add_filter("Audio", &["mp3", "wav"]).pick_file(move |picked| {
+        let Some(fp) = picked else { return }; // cancelled: do nothing, never block
+        let app = handle.state::<Arc<App>>().inner().clone();
+        let outcome = (|| -> Result<(), String> {
+            let path = fp.into_path().map_err(|_| "Can't open that file.".to_string())?;
+            audio::validate_file(&path)?;
+            let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("wav").to_ascii_lowercase();
+            let name = format!("{}.{ext}", uuid::Uuid::new_v4());
+            std::fs::create_dir_all(&app.sounds_dir).map_err(|e| e.to_string())?;
+            std::fs::copy(&path, app.sounds_dir.join(&name)).map_err(|e| format!("Couldn't copy the file: {e}"))?;
+            app.change(true, |s| {
+                let p = s.preset_mut();
+                for id in &ids {
+                    p.sounds.insert(id.clone(), SoundRef::File { file: name.clone() });
+                }
+                Ok(())
+            })
+        })();
+        match outcome {
+            Ok(()) => {
+                app.engine.event(ids[0].as_str(), true); // play the new sound once
+                let _ = handle.emit("import-done", &ids);
+            }
+            Err(e) => {
+                let _ = handle.emit("import-error", (&ids, e));
+            }
+        }
+    });
+    Ok(())
 }
 
 /// Plays a sound once: a SoundRef, or the current sound of an event id.

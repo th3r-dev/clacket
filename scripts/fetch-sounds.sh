@@ -36,21 +36,34 @@ done
 mkdir -p "$OUT/fx"
 while read -r name src; do
   f=$(find "$tmp" -name "$src.ogg" | head -1)
+  [ -z "$f" ] && { echo "fx: missing $src for $name"; continue; }
   ffmpeg -v error -y -i "$f" -ac 1 -ar 44100 -c:a libmp3lame -q:a 4 "$OUT/fx/$name.mp3"
 done <<'EOF'
-mouse_down mouseclick1
+mouse_down click_004
 mouse_up mouserelease1
 scroll tick_002
 tap click_002
 tap2 click_003
-swipe scratch_001
-pinch pluck_001
-plug_in select_001
-plug_out drop_001
-charger_in maximize_001
-charger_out minimize_001
-display_in open_001
-display_out close_001
+swipe scratch_002
+pinch pluck_002
+usb_storage_in confirmation_001
+usb_storage_out drop_003
+phone_in glass_006
+phone_out glass_003
+input_in switch_002
+input_out switch_005
+audio_in glass_001
+audio_out glass_002
+usb_other_in select_002
+usb_other_out drop_001
+charger_in maximize_003
+charger_out minimize_003
+headphones_in pluck_001
+headphones_out pluck_002
+display_in open_002
+display_out close_002
+sd_card_in tick_001
+sd_card_out tick_004
 EOF
 
 # Movement loop: 2 s of low-passed brown noise, fades so the loop seam is soft.
