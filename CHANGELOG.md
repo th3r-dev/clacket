@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/th3r-dev/clacket/compare/v0.3.0...v0.4.0) (2026-11-15)
+
+
+### New features
+
+* go live — wire the live Stripe Payment Link into the app and site ([#27](https://github.com/th3r-dev/clacket/issues/27)) ([5bf005f](https://github.com/th3r-dev/clacket/commit/5bf005ff73b20687a810f8025c958d34764860f9))
+
 ## [0.3.0](https://github.com/th3r-dev/clacket/compare/v0.2.0...v0.3.0) (2026-11-15)
 
 
