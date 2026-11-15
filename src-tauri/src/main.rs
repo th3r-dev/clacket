@@ -234,12 +234,17 @@ fn open_settings(h: &AppHandle) {
         return;
     }
     let app = h.state::<Arc<App>>().inner().clone();
-    if let Ok(w) = WebviewWindowBuilder::new(h, "settings", WebviewUrl::App("index.html".into()))
+    let b = WebviewWindowBuilder::new(h, "settings", WebviewUrl::App("index.html".into()))
         .title("Clacket")
-        .inner_size(880.0, 620.0)
-        .min_inner_size(720.0, 540.0)
-        .build()
-    {
+        .inner_size(880.0, 640.0)
+        .min_inner_size(720.0, 560.0);
+    // macOS: content runs under a transparent title bar; the name is hidden and the window
+    // buttons only show while the pointer is near the top (see window_controls)
+    #[cfg(target_os = "macos")]
+    let b = b.title_bar_style(tauri::TitleBarStyle::Overlay).hidden_title(true);
+    if let Ok(w) = b.build() {
+        #[cfg(target_os = "macos")]
+        set_window_controls(&w, false, false);
         app.window_open.store(true, Relaxed);
         let a = app.clone();
         // closing destroys the webview, so idle Clacket holds no browser engine in memory
@@ -321,7 +326,9 @@ fn get_state(app: AppState) -> Value {
         "last_event": *app.last_event.lock().unwrap(),
         "platform": std::env::consts::OS,
         "haptic_supported": haptic::SUPPORTED,
-        "clips": ["press/GENERIC_R0", "press/SPACE", "press/ENTER", "press/BACKSPACE"],
+        // built-in clips a key or event can be given: switch press clips and fx
+        "builtin": pack::SOUND_INDEX.iter().map(|(n, _, _)| *n)
+            .filter(|n| n.contains("/press/") || n.starts_with("fx/")).collect::<Vec<_>>(),
     })
 }
 
@@ -512,6 +519,28 @@ fn open_link(which: String) -> Result<(), String> {
     tauri_plugin_opener::open_url(url, None::<&str>).map_err(|e| e.to_string())
 }
 
+/// Shows or hides the macOS traffic-light buttons with a short fade.
+#[cfg(target_os = "macos")]
+fn set_window_controls(w: &tauri::WebviewWindow, visible: bool, animate: bool) {
+    use objc2_app_kit::{NSAnimatablePropertyContainer, NSWindow, NSWindowButton};
+    let Ok(ptr) = w.ns_window() else { return };
+    let win: &NSWindow = unsafe { &*(ptr as *const NSWindow) };
+    for kind in [NSWindowButton::CloseButton, NSWindowButton::MiniaturizeButton, NSWindowButton::ZoomButton] {
+        if let Some(b) = win.standardWindowButton(kind) {
+            let alpha = if visible { 1.0 } else { 0.0 };
+            if animate { b.animator().setAlphaValue(alpha) } else { b.setAlphaValue(alpha) }
+        }
+    }
+}
+
+#[tauri::command]
+fn window_controls(window: tauri::WebviewWindow, visible: bool) {
+    #[cfg(target_os = "macos")]
+    set_window_controls(&window, visible, true);
+    #[cfg(not(target_os = "macos"))]
+    let _ = (window, visible);
+}
+
 #[tauri::command]
 fn request_permission() {
     input::request_permission();
@@ -535,7 +564,7 @@ fn main() {
         )
         .invoke_handler(tauri::generate_handler![
             get_state, set_option, set_switch, set_sound, set_event_on, import_sound, preview,
-            preset, activate_license, remove_license, open_link, request_permission
+            preset, activate_license, remove_license, open_link, request_permission, window_controls
         ])
         .setup(|tapp| {
             #[cfg(target_os = "macos")]
@@ -577,8 +606,8 @@ fn main() {
 
             let a = app.clone();
             app.input_ok.store(input::permitted() && input::start(move |ev| a.on_input(ev)), Relaxed);
-            if !app.input_ok.load(Relaxed) {
-                open_settings(&h); // shows the permission banner
+            if !app.input_ok.load(Relaxed) || std::env::args().any(|a| a == "--settings") {
+                open_settings(&h); // permission banner, or `clacket --settings` from a terminal
             }
             let a = app.clone();
             devices::start(move |ev| a.on_device(ev));

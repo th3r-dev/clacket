@@ -1,7 +1,7 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Settings window: IPC to Clacket's own commands and events only. No URL, HTTP or shell access.",
+  "description": "Settings window: IPC to Clacket's own commands and events, and dragging the window by its top strip. No URL, HTTP or shell access.",
   "windows": ["settings"],
-  "permissions": ["core:default"]
+  "permissions": ["core:default", "core:window:allow-start-dragging"]
 }
