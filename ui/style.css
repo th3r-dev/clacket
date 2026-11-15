@@ -163,7 +163,15 @@ main { padding: var(--s4) var(--s5) var(--s6); }
 .fxtile.hit .fx-ico { animation: fxhit .32s cubic-bezier(.2,.8,.3,1); }
 @keyframes fxhit { 0%{transform:scale(1)} 32%{transform:scale(.8) translateY(3px)} 70%{transform:scale(1.06)} 100%{transform:scale(1)} }
 .fx-label { font-weight: 600; font-size: 13px; text-align: center; color: var(--ink); }
-.fx-chip { position: absolute; top: 8px; left: 10px; font-size: 10px; font-weight: 600; letter-spacing: .02em; color: var(--muted); }
+.fx-chip { position: absolute; top: 8px; left: 10px; font-size: 10px; font-weight: 700; letter-spacing: .02em; padding: 2px 8px; border-radius: 999px; display: inline-flex; align-items: center; gap: 3px; color: var(--muted); }
+.fx-chip.in { background: var(--accent); color: var(--accent-ink); }
+.fx-chip.in::before { content: "\2193"; font-weight: 800; }   /* down arrow: plugged in */
+.fx-chip.out { border: 1px solid var(--line); color: var(--muted); }
+.fx-chip.out::before { content: "\2191"; }                     /* up arrow: unplugged */
+/* unplugged = greyed/de-emphasised; plugged-in keeps full colour, so a pair reads apart at a glance */
+.fxtile[data-dir="out"] .fx-ico { color: var(--muted); opacity: .75; }
+.fxtile[data-dir="out"] .fx-ico .hl { fill: var(--muted); }
+.fxtile[data-dir="in"] { box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); }
 .fx-toggle { position: absolute; top: 8px; right: 8px; cursor: pointer; }
 .fx-toggle input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .fx-sw { display: block; width: 30px; height: 18px; border-radius: 999px; background: var(--line); position: relative; transition: background .15s; }

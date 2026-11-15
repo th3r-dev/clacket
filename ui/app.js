@@ -292,15 +292,15 @@ function fxIcon(id) {
   return M[id] || S("");
 }
 
-function fxTile(id, label, chip) {
+function fxTile(id, label, chip, dir) {
   const on = !S.settings.off.includes(id);
   const ref = currentSounds()[id];
   const lock = !S.pro;
   const err = h("p", { class: "error", role: "alert" });
   const ico = h("span", { class: "fx-ico", "aria-hidden": "true" });
   ico.innerHTML = fxIcon(id);
-  const tile = h("div", { class: "fxtile" + (lock ? " locked" : ""), "data-custom": ref ? "1" : null },
-    chip ? h("span", { class: "fx-chip", text: chip }) : null,
+  const tile = h("div", { class: "fxtile" + (lock ? " locked" : ""), "data-custom": ref ? "1" : null, "data-dir": dir || null },
+    chip ? h("span", { class: "fx-chip" + (dir ? " " + dir : ""), text: chip }) : null,
     h("label", { class: "fx-toggle", title: on ? "On" : "Off" },
       h("input", { type: "checkbox", checked: on, disabled: lock, "aria-label": `${label} sound on`,
         onchange: (e) => quiet(call("set_event_on", { ids: [id], on: e.target.checked }, err)) }),
@@ -333,8 +333,8 @@ function renderMouse() {
   if (S.platform !== "macos") mouse = mouse.filter((id) => !["tap", "tap2", "swipe", "pinch"].includes(id));
   $("mouse-rows").replaceChildren(...mouse.map((id) => fxTile(id, FX_FEEL[id])));
   $("device-rows").replaceChildren(...Object.entries(DEVICE_LABELS).flatMap(([cat, label]) => [
-    fxTile(`plug:${cat}:in`, label, "Plugged in"),
-    fxTile(`plug:${cat}:out`, label, "Unplugged"),
+    fxTile(`plug:${cat}:in`, label, "Plugged in", "in"),
+    fxTile(`plug:${cat}:out`, label, "Unplugged", "out"),
   ]));
   if (S.last_event) $("last-event").textContent = S.last_event;
 }
