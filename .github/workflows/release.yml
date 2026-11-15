@@ -125,7 +125,7 @@ jobs:
   # buttons serve the new version (the repo is private, so the site hosts the files).
   deploy-site:
     needs: [release-please, build]
-    if: needs.release-please.outputs.created == 'true'
+    if: ${{ always() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     environment: production
     permissions:
