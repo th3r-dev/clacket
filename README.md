@@ -16,6 +16,14 @@
 </p>
 
 <p align="center">
+  <video src="https://github.com/th3r-dev/clacket/raw/main/docs/clacket-promo.mp4" poster="docs/images/promo-poster.jpg" width="760" controls muted playsinline>
+    <a href="https://github.com/th3r-dev/clacket/raw/main/docs/clacket-promo.mp4"><img src="docs/images/promo-poster.jpg" width="760" alt="Watch the Clacket demo (40 seconds)"></a>
+  </video>
+  <br>
+  <em>▶ <a href="https://github.com/th3r-dev/clacket/raw/main/docs/clacket-promo.mp4">Watch the 40-second demo</a> — or <a href="https://clacket.th33raphat.dev">try every switch in your browser</a>.</em>
+</p>
+
+<p align="center">
   <img src="docs/images/light-keyboard.png" alt="Clacket's keyboard tab: an ANSI keyboard drawn on screen, with the space bar selected and set to Holy Panda's space bar sound." width="760">
 </p>
 
