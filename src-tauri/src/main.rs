@@ -43,8 +43,8 @@ use tauri_plugin_autostart::ManagerExt as _;
 use tauri_plugin_dialog::DialogExt;
 
 /// Opened in the user's browser, never fetched by Clacket. Set these before release.
-const BUY_URL: &str = "https://buy.stripe.com/REPLACE_WITH_PAYMENT_LINK";
-const RECOVER_URL: &str = "https://clacket-license.REPLACE.workers.dev/recover";
+const BUY_URL: &str = "https://buy.stripe.com/dRm00l3J6bkdatA9P32kw00";
+const RECOVER_URL: &str = "https://pay.th33raphat.dev/recover";
 const PRO_REQUIRED: &str = "PRO_REQUIRED";
 
 struct App {
