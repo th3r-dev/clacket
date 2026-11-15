@@ -9,7 +9,7 @@ license = "MIT"
 tauri-build = { version = "2", features = [] }
 flate2 = "1"
 chacha20 = "0.9"
-getrandom = "0.3"
+getrandom = "0.4"
 
 [dependencies]
 tauri = { version = "2", features = ["tray-icon", "image-png"] }

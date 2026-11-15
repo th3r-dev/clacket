@@ -586,7 +586,7 @@ dependencies = [
  "evdev",
  "fastrand",
  "flate2",
- "getrandom 0.3.4",
+ "getrandom 0.4.3",
  "io-kit-sys",
  "libc",
  "objc2",
