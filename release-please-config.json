@@ -1,0 +1,24 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    ".": {
+      "release-type": "simple",
+      "package-name": "clacket",
+      "include-component-in-tag": false,
+      "bump-minor-pre-major": true,
+      "changelog-sections": [
+        { "type": "feat", "section": "New features" },
+        { "type": "fix", "section": "Fixes" },
+        { "type": "perf", "section": "Faster or lighter" },
+        { "type": "chore", "section": "Maintenance", "hidden": true },
+        { "type": "ci", "section": "CI", "hidden": true },
+        { "type": "docs", "section": "Docs", "hidden": true }
+      ],
+      "extra-files": [
+        { "type": "toml", "path": "src-tauri/Cargo.toml", "jsonpath": "$.package.version" },
+        { "type": "json", "path": "src-tauri/tauri.conf.json", "jsonpath": "$.version" },
+        { "type": "json", "path": "server/package.json", "jsonpath": "$.version" }
+      ]
+    }
+  }
+}
