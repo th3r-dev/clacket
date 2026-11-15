@@ -120,3 +120,34 @@ jobs:
           workingDirectory: server
           preCommands: npx wrangler d1 migrations apply clacket-license --remote
           command: deploy
+
+  # After the installers are attached, rebuild clacket.th33raphat.dev so its download
+  # buttons serve the new version (the repo is private, so the site hosts the files).
+  deploy-site:
+    needs: [release-please, build]
+    if: needs.release-please.outputs.created == 'true'
+    runs-on: ubuntu-latest
+    environment: production
+    permissions:
+      contents: read  # gh release download
+    steps:
+      - - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Check Cloudflare token
+        id: cf
+        env:
+          TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: echo "ready=$([ -n "$TOKEN" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: Build site
+        if: steps.cf.outputs.ready == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/build-site.sh
+      - - uses: cloudflare/wrangler-action@953926a2e2182532811c01a25e53647d93bf07c0 # v4.1.3
+        if: steps.cf.outputs.ready == 'true'
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          workingDirectory: site
+          command: deploy
