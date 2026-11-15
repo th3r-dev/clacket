@@ -1,5 +1,7 @@
-// Browser demo of Clacket's switches. Same recordings as the app; /sounds/index.json is
-// written by scripts/build-site.sh from src-tauri/assets/sounds.
+// Browser demo of Clacket's switches. Same recordings as the app, packed by
+// scripts/pack-site.mjs into encrypted blobs; PACK below is filled in at build time with
+// { seed, sounds: { id: { url, clips: [[phase/name, bytes]] } }, images: { name: url } }.
+const PACK = /*PACK*/null;
 const SWITCHES = [
   ["cream", "NK Cream", "#efe0c2", "Buttery, rounded"],
   ["holypanda", "Holy Panda", "#f39a6b", "Big bump, loud thock"],
@@ -25,7 +27,7 @@ const ROWS = [
 ].map((r) => r.split(" ").map((t) => { const p = t.split(":"); return [p[0], p[1], +(p[2] || 1)]; }));
 
 const $ = (id) => document.getElementById(id);
-let ctx, master, index, current = "cream", muted = false;
+let ctx, master, current = "cream", muted = false;
 const banks = {}; // switch id -> { press: {GENERIC:[buffers], SPACE..}, release: {...} }
 
 function audio() {
@@ -39,19 +41,38 @@ function audio() {
   return ctx;
 }
 
-async function loadBank(id) {
-  if (banks[id]) return banks[id];
-  index ??= await (await fetch("/sounds/index.json")).json();
-  const bank = { press: {}, release: {} };
-  await Promise.all(index[id].map(async (path) => {
-    const [phase, name] = path.split("/");
-    const kind = name.startsWith("GENERIC") ? "GENERIC" : name;
-    const buf = await audio().decodeAudioData(await (await fetch(`/sounds/${id}/${path}.mp3`)).arrayBuffer());
-    bank[phase][kind] ??= [];
-    bank[phase][kind].push(buf);
-  }));
-  banks[id] = bank;
-  return bank;
+// blobs are iv(12) || AES-GCM ciphertext; decrypted in memory only, never given a URL
+let keyP;
+async function unseal(url) {
+  keyP ??= crypto.subtle.digest("SHA-256", new TextEncoder().encode(`clacket:${PACK.seed}`))
+    .then((raw) => crypto.subtle.importKey("raw", raw, "AES-GCM", false, ["decrypt"]));
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`${url}: ${res.status}`);
+  const buf = await res.arrayBuffer();
+  return crypto.subtle.decrypt({ name: "AES-GCM", iv: buf.slice(0, 12) }, await keyP, buf.slice(12));
+}
+
+// decoding needs no running context, so the preload doesn't start audio before a gesture
+let decoder;
+const decode = (bytes) => (ctx ?? (decoder ??= new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(2, 1, 48000))).decodeAudioData(bytes);
+
+const loading = {};
+function loadBank(id) {
+  loading[id] ??= (async () => {
+    const all = await unseal(PACK.sounds[id].url);
+    const bank = { press: {}, release: {} };
+    let at = 0;
+    await Promise.all(PACK.sounds[id].clips.map(async ([path, len]) => {
+      const bytes = all.slice(at, at += len);
+      const [phase, name] = path.split("/");
+      const kind = name.startsWith("GENERIC") ? "GENERIC" : name;
+      const buf = await decode(bytes);
+      bank[phase][kind] ??= [];
+      bank[phase][kind].push(buf);
+    }));
+    return (banks[id] = bank);
+  })().catch((e) => { delete loading[id]; throw e; });
+  return loading[id];
 }
 
 const KIND = { Space: "SPACE", Enter: "ENTER", Backspace: "BACKSPACE" };
@@ -165,6 +186,14 @@ if (mine) {
   for (const a of document.querySelectorAll(".dl .btn")) a.classList.add("ghost");
   mine.classList.remove("ghost");
   mine.parentElement.prepend(mine);
+}
+
+// screenshots: decrypted and drawn onto their canvas (no image URL to save or open)
+for (const c of document.querySelectorAll("canvas[data-img]")) {
+  unseal(PACK.images[c.dataset.img])
+    .then((bytes) => createImageBitmap(new Blob([bytes], { type: "image/png" })))
+    .then((bmp) => { c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height); bmp.close(); })
+    .catch((e) => console.warn("screenshot", c.dataset.img, e));
 }
 
 pick("cream").catch(() => {}); // sounds load lazily; a failed preload retries on first key

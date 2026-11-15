@@ -1,32 +1,19 @@
 #!/usr/bin/env bash
 # Assembles site/dist for clacket.th33raphat.dev from site/src plus the app's own assets:
-# switch recordings (for the browser demo), fonts, screenshots, and the latest release's
+# switch recordings (for the browser demo) and screenshots, encrypted; fonts; and the latest release's
 # installers (the repo is private, so the site serves the downloads). Deploy with:
 #   scripts/build-site.sh && (cd site && npx wrangler deploy)
 set -euo pipefail
 cd "$(dirname "$0")/.."
 OUT=site/dist
-rm -rf "$OUT" && mkdir -p "$OUT"/{sounds,fonts,img,download}
+rm -rf "$OUT" && mkdir -p "$OUT"/{fonts,img,download}
 cp -R site/src/. "$OUT"/
 
-# demo sounds: switch folders only (no fx), plus an index the demo reads
-python3 - <<'EOF'
-import json, pathlib, shutil
-src, out = pathlib.Path("src-tauri/assets/sounds"), pathlib.Path("site/dist/sounds")
-index = {}
-for sw in sorted(p for p in src.iterdir() if p.is_dir() and p.name != "fx"):
-    files = sorted(f for f in sw.rglob("*.mp3"))
-    index[sw.name] = [str(f.relative_to(sw).with_suffix("")) for f in files]
-    for f in files:
-        dst = out / sw.name / f.relative_to(sw)
-        dst.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(f, dst)
-(out / "index.json").write_text(json.dumps(index, separators=(",", ":")))
-print(f"sounds: {sum(map(len, index.values()))} clips across {len(index)} switches")
-EOF
+# demo sounds and screenshots, encrypted into /a/*.bin (see pack-site.mjs)
+node scripts/pack-site.mjs
 
 cp ui/fonts/{mali-latin-400,mali-latin-600,kanit-latin-400,kanit-latin-500}-normal.woff2 "$OUT"/fonts/
-cp docs/images/{light-sound,light-keyboard,dark-mouse,social-preview}.png "$OUT"/img/
+cp docs/images/social-preview.png "$OUT"/img/ # Open Graph image stays a plain URL
 cp src-tauri/icons/128x128.png "$OUT"/img/icon-128.png
 
 cat > "$OUT"/404.html <<'EOF'
