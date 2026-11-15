@@ -1,9 +1,13 @@
 {
-  // Static site for clacket.th33raphat.dev. Built by scripts/build-site.sh into ./dist.
+  // clacket.th33raphat.dev: static assets built by scripts/build-site.sh into ./dist, plus a
+  // small worker that guards the encrypted sound and screenshot blobs under /a/*.
   "name": "clacket-site",
+  "main": "./worker.js",
   "compatibility_date": "2026-11-01",
   "assets": {
     "directory": "./dist",
+    "binding": "ASSETS",
+    "run_worker_first": ["/a/*"],
     "not_found_handling": "404-page",
     "html_handling": "auto-trailing-slash"
   },
