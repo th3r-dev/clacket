@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect width="1024" height="1024" rx="228" fill="#16171A"/>
+  <!-- keycap: skirt + dished top -->
+  <rect x="212" y="300" width="460" height="460" rx="84" fill="#E8622C"/>
+  <rect x="262" y="330" width="360" height="330" rx="56" fill="#F4F1EA"/>
+  <rect x="300" y="362" width="284" height="44" rx="22" fill="#16171A" opacity=".08"/>
+  <!-- sound arcs -->
+  <path d="M740 420a150 150 0 0 1 0 220" fill="none" stroke="#F4F1EA" stroke-width="44" stroke-linecap="round"/>
+  <path d="M820 350a250 250 0 0 1 0 360" fill="none" stroke="#F4F1EA" stroke-width="44" stroke-linecap="round" opacity=".55"/>
+</svg>

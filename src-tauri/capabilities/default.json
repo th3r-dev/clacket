@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Settings window: IPC to Clacket's own commands and events only. No URL, HTTP or shell access.",
+  "windows": ["settings"],
+  "permissions": ["core:default"]
+}

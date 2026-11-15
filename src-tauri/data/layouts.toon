@@ -1,0 +1,21 @@
+ansi[6]:
+  - "Escape _ F1 F2 F3 F4 _:0.5 F5 F6 F7 F8 _:0.5 F9 F10 F11 F12 | PrintScreen ScrollLock Pause"
+  - "Backquote Digit1 Digit2 Digit3 Digit4 Digit5 Digit6 Digit7 Digit8 Digit9 Digit0 Minus Equal Backspace:2 | Insert Home PageUp"
+  - "Tab:1.5 KeyQ KeyW KeyE KeyR KeyT KeyY KeyU KeyI KeyO KeyP BracketLeft BracketRight Backslash:1.5 | Delete End PageDown"
+  - "CapsLock:1.75 KeyA KeyS KeyD KeyF KeyG KeyH KeyJ KeyK KeyL Semicolon Quote Enter:2.25"
+  - "ShiftLeft:2.25 KeyZ KeyX KeyC KeyV KeyB KeyN KeyM Comma Period Slash ShiftRight:2.75 | _ ArrowUp _"
+  - "ControlLeft:1.25 MetaLeft:1.25 AltLeft:1.25 Space:6.25 AltRight:1.25 MetaRight:1.25 ContextMenu:1.25 ControlRight:1.25 | ArrowLeft ArrowDown ArrowRight"
+iso[6]:
+  - "Escape _ F1 F2 F3 F4 _:0.5 F5 F6 F7 F8 _:0.5 F9 F10 F11 F12 | PrintScreen ScrollLock Pause"
+  - "Backquote Digit1 Digit2 Digit3 Digit4 Digit5 Digit6 Digit7 Digit8 Digit9 Digit0 Minus Equal Backspace:2 | Insert Home PageUp"
+  - "Tab:1.5 KeyQ KeyW KeyE KeyR KeyT KeyY KeyU KeyI KeyO KeyP BracketLeft BracketRight Enter:1.5 | Delete End PageDown"
+  - "CapsLock:1.75 KeyA KeyS KeyD KeyF KeyG KeyH KeyJ KeyK KeyL Semicolon Quote Backslash Enter:1.25"
+  - "ShiftLeft:1.25 IntlBackslash KeyZ KeyX KeyC KeyV KeyB KeyN KeyM Comma Period Slash ShiftRight:2.75 | _ ArrowUp _"
+  - "ControlLeft:1.25 MetaLeft:1.25 AltLeft:1.25 Space:6.25 AltRight:1.25 MetaRight:1.25 ContextMenu:1.25 ControlRight:1.25 | ArrowLeft ArrowDown ArrowRight"
+jis[6]:
+  - "Escape _ F1 F2 F3 F4 _:0.5 F5 F6 F7 F8 _:0.5 F9 F10 F11 F12 | PrintScreen ScrollLock Pause"
+  - "Backquote Digit1 Digit2 Digit3 Digit4 Digit5 Digit6 Digit7 Digit8 Digit9 Digit0 Minus Equal IntlYen Backspace | Insert Home PageUp"
+  - "Tab:1.5 KeyQ KeyW KeyE KeyR KeyT KeyY KeyU KeyI KeyO KeyP BracketLeft BracketRight Enter:1.5 | Delete End PageDown"
+  - "CapsLock:1.75 KeyA KeyS KeyD KeyF KeyG KeyH KeyJ KeyK KeyL Semicolon Quote Backslash Enter:1.25"
+  - "ShiftLeft:2.25 KeyZ KeyX KeyC KeyV KeyB KeyN KeyM Comma Period Slash IntlRo ShiftRight:1.75 | _ ArrowUp _"
+  - "ControlLeft:1.25 MetaLeft:1.25 AltLeft:1.25 Lang2:1.25 Space:3.75 Lang1:1.25 KanaMode:1.25 AltRight:1.25 ControlRight:1.25 | ArrowLeft ArrowDown ArrowRight"
