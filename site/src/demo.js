@@ -202,6 +202,7 @@ if (mine) {
 
 // screenshots: decrypted and drawn onto their canvas (no image URL to save or open)
 for (const c of document.querySelectorAll("canvas[data-img]")) {
+  c.addEventListener("contextmenu", (e) => e.preventDefault()); // Chrome offers "Save image as" on a canvas
   unseal(PACK.images[c.dataset.img])
     .then((bytes) => createImageBitmap(new Blob([bytes], { type: "image/png" })))
     .then((bmp) => { c.getContext("2d").drawImage(bmp, 0, 0, c.width, c.height); bmp.close(); })
