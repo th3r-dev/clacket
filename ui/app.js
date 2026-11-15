@@ -254,18 +254,69 @@ function renderSide() {
 }
 
 // ----- mouse & devices -----
-function eventRow(id, label) {
+// ----- mouse & devices: icon tiles -----
+const FX_FEEL = {
+  "mouse:left": "Left click", "mouse:right": "Right click", "mouse:middle": "Middle click",
+  "mouse:up": "Button release", scroll: "Scroll tick", move: "Pointer movement",
+  tap: "Tap to click", tap2: "Two-finger tap", swipe: "Swipe", pinch: "Pinch",
+};
+// schematic line icons; .hl fills with the accent. 24x24, currentColor stroke.
+function fxIcon(id) {
+  const S = (inner) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${inner}</svg>`;
+  const mouse = (hl) => S(`<rect x="6" y="2.5" width="12" height="19" rx="6"/><line x1="12" y1="3.2" x2="12" y2="10"/>${hl}`);
+  const dev = id.startsWith("plug:") ? id.split(":")[1] : null;
+  const M = {
+    "mouse:left": mouse(`<path class="hl" d="M12 3.4 A5.6 5.6 0 0 0 6.4 9 H12 Z"/>`),
+    "mouse:right": mouse(`<path class="hl" d="M12 3.4 A5.6 5.6 0 0 1 17.6 9 H12 Z"/>`),
+    "mouse:middle": mouse(`<rect class="hl" x="11" y="4.5" width="2" height="4.5" rx="1" stroke="none"/>`),
+    "mouse:up": mouse(`<path class="hl" d="M9.8 6.5 l2.2 -2.2 l2.2 2.2" fill="none" stroke="var(--accent)"/>`),
+    scroll: mouse(`<rect x="11" y="4.6" width="2" height="4" rx="1"/><path class="hl" d="M10 4 l2 -1.6 l2 1.6 M10 9.4 l2 1.6 l2 -1.6" stroke="var(--accent)"/>`),
+    move: S(`<path class="hl" d="M5 3.5 l6.5 15 l2.3 -5.7 l5.7 -2.3 Z" stroke="none"/><path d="M3 10 h2.5 M3 13.5 h3.2"/>`),
+    tap: S(`<circle cx="12" cy="12" r="6.5"/><circle class="hl" cx="12" cy="12" r="2.6" stroke="none"/>`),
+    tap2: S(`<circle cx="12" cy="12" r="7"/><circle class="hl" cx="9" cy="12" r="2.1" stroke="none"/><circle class="hl" cx="15" cy="12" r="2.1" stroke="none"/>`),
+    swipe: S(`<path d="M3.5 15 q8.5 -10 16.5 -3.5"/><path class="hl" d="M20 11.5 l0.6 4.2 l-4.2 -0.8" stroke="var(--accent)"/>`),
+    pinch: S(`<circle class="hl" cx="12" cy="12" r="1.8" stroke="none"/><path d="M4 4 l4.5 4.5 M8.5 4 H4 V8.5 M20 20 l-4.5 -4.5 M15.5 20 H20 V15.5"/>`),
+  };
+  const D = {
+    usb_storage: `<rect x="7" y="8" width="10" height="11.5" rx="1.5"/><rect x="10" y="4" width="4" height="4"/><path class="hl" d="M10.6 11.5 v4.5 M13.4 11.5 v4.5" stroke="var(--accent)"/>`,
+    phone: `<rect x="7" y="2.5" width="10" height="19" rx="2.5"/><line x1="10.5" y1="18.7" x2="13.5" y2="18.7"/>`,
+    input: `<rect x="3" y="7" width="18" height="10" rx="2"/><path class="hl" d="M6.5 10.3 h1 M10 10.3 h1 M13.5 10.3 h1 M17 10.3 h0.5 M8 13.6 h8" stroke="var(--accent)"/>`,
+    audio: `<path d="M4 9 h3.5 l5 -4 v14 l-5 -4 H4 Z"/><path class="hl" d="M16 9.2 a4 4 0 0 1 0 5.6" stroke="var(--accent)"/>`,
+    usb_other: `<path d="M12 21 V5"/><circle class="hl" cx="12" cy="3.6" r="1.6" stroke="none"/><path d="M12 12 l3.6 -2.6 M15.6 9.4 v2.8 h-2.2 M12 15.4 l-3.6 -2.6 M8.4 12.8 v1.8"/>`,
+    charger: `<path class="hl" d="M13 2.5 L5.5 13 h4.8 l-1 8.5 L18.5 10.5 h-4.8 Z" stroke="none"/>`,
+    headphones: `<path d="M5 14 v-2 a7 7 0 0 1 14 0 v2"/><rect class="hl" x="3.4" y="13.4" width="3.6" height="6.2" rx="1.6" stroke="none"/><rect class="hl" x="17" y="13.4" width="3.6" height="6.2" rx="1.6" stroke="none"/>`,
+    display: `<rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20 h6 M12 16 v4"/>`,
+    sd_card: `<path d="M8.5 3 H15 a2 2 0 0 1 2 2 v14 a2 2 0 0 1 -2 2 H9 a2 2 0 0 1 -2 -2 V6.5 Z M8.5 3 L7 5 v1.5"/><path class="hl" d="M9.6 5 v2 M11.6 5 v2 M13.6 5 v2" stroke="var(--accent)"/>`,
+  };
+  if (dev) return S(D[dev] || "");
+  return M[id] || S("");
+}
+
+function fxTile(id, label, chip) {
   const on = !S.settings.off.includes(id);
   const ref = currentSounds()[id];
-  const err = h("p", { class: "error", role: "alert" });
   const lock = !S.pro;
-  return h("div", { class: "row" },
-    h("input", { type: "checkbox", checked: on, disabled: lock, "aria-label": `${label} on`, onchange: (e) => quiet(call("set_event_on", { ids: [id], on: e.target.checked }, err)) }),
-    h("span", {}, label, err),
-    (() => { const s = soundSelect(ref, (v) => v !== "__file" && quiet(call("set_sound", { ids: [id], sound: v ? { builtin: v } : null }, err)), `Sound for ${label}`); s.disabled = lock; return s; })(),
-    h("button", { text: "Choose file…", disabled: lock, onclick: () => quiet(call("import_sound", { ids: [id] }, err)) }),
-    h("button", { text: "Preview", "aria-label": `Preview ${label}`, onclick: () => quiet(call("preview", { event: id }, err)) }),
+  const err = h("p", { class: "error", role: "alert" });
+  const ico = h("span", { class: "fx-ico", "aria-hidden": "true" });
+  ico.innerHTML = fxIcon(id);
+  const tile = h("div", { class: "fxtile" + (lock ? " locked" : ""), "data-custom": ref ? "1" : null },
+    chip ? h("span", { class: "fx-chip", text: chip }) : null,
+    h("label", { class: "fx-toggle", title: on ? "On" : "Off" },
+      h("input", { type: "checkbox", checked: on, disabled: lock, "aria-label": `${label} sound on`,
+        onchange: (e) => quiet(call("set_event_on", { ids: [id], on: e.target.checked }, err)) }),
+      h("span", { class: "fx-sw", "aria-hidden": "true" })),
+    h("button", { class: "fx-preview", type: "button", "aria-label": `Preview ${label}`,
+      onclick: () => { tile.classList.remove("hit"); void tile.offsetWidth; tile.classList.add("hit"); quiet(call("preview", { event: id }, err)); } },
+      ico, h("span", { class: "fx-label", text: label })),
+    (() => {
+      const sel = soundSelect(ref, (v) => v !== "__file" && quiet(call("set_sound", { ids: [id], sound: v ? { builtin: v } : null }, err)), `Sound for ${label}`);
+      sel.disabled = lock;
+      const d = h("details", { class: "fx-change" }, h("summary", { text: "Change sound" }), sel,
+        h("button", { text: "Choose file…", disabled: lock, onclick: () => quiet(call("import_sound", { ids: [id] }, err)) }), err);
+      return d;
+    })(),
   );
+  return tile;
 }
 
 function renderMouse() {
@@ -278,12 +329,12 @@ function renderMouse() {
   $("haptic").checked = S.settings.haptic;
   $("haptic").disabled = !S.pro;
   $("haptic-row").hidden = !S.haptic_supported;
-  const mouse = Object.keys(FX_LABELS).filter((id) => S.fx_events.includes(id));
-  if (S.platform !== "macos") mouse.splice(0, mouse.length, ...mouse.filter((id) => !["tap", "tap2", "swipe", "pinch"].includes(id)));
-  $("mouse-rows").replaceChildren(...mouse.map((id) => eventRow(id, FX_LABELS[id])));
+  let mouse = Object.keys(FX_FEEL).filter((id) => S.fx_events.includes(id));
+  if (S.platform !== "macos") mouse = mouse.filter((id) => !["tap", "tap2", "swipe", "pinch"].includes(id));
+  $("mouse-rows").replaceChildren(...mouse.map((id) => fxTile(id, FX_FEEL[id])));
   $("device-rows").replaceChildren(...Object.entries(DEVICE_LABELS).flatMap(([cat, label]) => [
-    eventRow(`plug:${cat}:in`, `${label} plugged in`),
-    eventRow(`plug:${cat}:out`, `${label} unplugged`),
+    fxTile(`plug:${cat}:in`, label, "Plugged in"),
+    fxTile(`plug:${cat}:out`, label, "Unplugged"),
   ]));
   if (S.last_event) $("last-event").textContent = S.last_event;
 }
