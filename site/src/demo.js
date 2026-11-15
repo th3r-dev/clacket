@@ -78,8 +78,13 @@ function loadBank(id) {
 const KIND = { Space: "SPACE", Enter: "ENTER", Backspace: "BACKSPACE" };
 const kindOf = (code) => KIND[code] ?? "GENERIC";
 
+// sound only while this page is the one in front and focused; `away` holds from a blur until
+// the window gets focus back or the visitor taps it
+let away = false;
+const focused = () => !away && document.visibilityState === "visible" && document.hasFocus();
+
 function play(code, down) {
-  if (muted) return;
+  if (muted || !focused()) return;
   const bank = banks[current];
   if (!bank) return;
   const set = bank[down ? "press" : "release"];
@@ -166,10 +171,17 @@ addEventListener("keyup", (e) => {
   light(e.code, false);
   play(e.code, false);
 });
-addEventListener("blur", () => {
-  for (const c of held) light(c, false);
+// leaving the page: let go of every lit key and silence the context; the next key or tap resumes it
+function release() {
+  away = true;
+  for (const k of document.querySelectorAll(".k.down")) k.classList.remove("down");
   held.clear();
-});
+  if (ctx?.state === "running") ctx.suspend();
+}
+addEventListener("blur", release);
+addEventListener("focus", () => { away = false; });
+addEventListener("pointerdown", () => { away = false; }, true);
+document.addEventListener("visibilitychange", () => { if (document.visibilityState !== "visible") release(); });
 
 $("vol").addEventListener("input", (e) => { if (master) master.gain.value = +e.target.value; });
 $("mute").addEventListener("click", (e) => {
