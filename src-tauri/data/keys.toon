@@ -46,14 +46,14 @@ keys[197]{code,label,mac,win,evdev}:
   Digit9,"9",25,10,10
   Digit0,"0",29,11,11
   Enter,Enter,36,28,28
-  Escape,Escape,53,1,1
+  Escape,Esc,53,1,1
   Backspace,Backspace,51,14,14
   Tab,Tab,48,15,15
   Space,Space,49,57,57
   Minus,"-",27,12,12
   Equal,"=",24,13,13
-  BracketLeft,Bracket,33,26,26
-  BracketRight,Bracket,30,27,27
+  BracketLeft,"[",33,26,26
+  BracketRight,"]",30,27,27
   Backslash,"\\",42,43,43
   Semicolon,";",41,39,39
   Quote,"'",39,40,40
@@ -61,7 +61,7 @@ keys[197]{code,label,mac,win,evdev}:
   Comma,",",43,51,51
   Period,".",47,52,52
   Slash,"/",44,53,53
-  CapsLock,Caps Lock,57,58,58
+  CapsLock,Caps,57,58,58
   F1,F1,122,59,59
   F2,F2,120,60,60
   F3,F3,99,61,61
@@ -74,24 +74,24 @@ keys[197]{code,label,mac,win,evdev}:
   F10,F10,109,68,68
   F11,F11,103,87,87
   F12,F12,111,88,88
-  PrintScreen,Print Screen,null,57399,99
-  ScrollLock,Scroll Lock,null,70,70
+  PrintScreen,PrtSc,null,57399,99
+  ScrollLock,ScrLk,null,70,70
   Pause,Pause,null,69,119
-  Insert,Insert,114,57426,110
+  Insert,Ins,114,57426,110
   Home,Home,115,57415,102
-  PageUp,Page Up,116,57417,104
-  Delete,Delete,117,57427,111
+  PageUp,PgUp,116,57417,104
+  Delete,Del,117,57427,111
   End,End,119,57423,107
-  PageDown,Page Down,121,57425,109
-  ArrowRight,"",124,57421,106
-  ArrowLeft,"",123,57419,105
-  ArrowDown,Down,125,57424,108
-  ArrowUp,Up,126,57416,103
-  NumLock,Num Lock,71,57413,69
-  NumpadDivide,Divide,75,57397,98
-  NumpadMultiply,Multiply,67,55,55
-  NumpadSubtract,Subtract,78,74,74
-  NumpadAdd,Add,69,78,78
+  PageDown,PgDn,121,57425,109
+  ArrowRight,"→",124,57421,106
+  ArrowLeft,"←",123,57419,105
+  ArrowDown,"↓",125,57424,108
+  ArrowUp,"↑",126,57416,103
+  NumLock,Num,71,57413,69
+  NumpadDivide,"÷",75,57397,98
+  NumpadMultiply,"×",67,55,55
+  NumpadSubtract,"−",78,74,74
+  NumpadAdd,"+",69,78,78
   NumpadEnter,Enter,76,57372,96
   Numpad1,"1",83,79,79
   Numpad2,"2",84,80,80
@@ -103,11 +103,11 @@ keys[197]{code,label,mac,win,evdev}:
   Numpad8,"8",91,72,72
   Numpad9,"9",92,73,73
   Numpad0,"0",82,82,82
-  NumpadDecimal,Decimal,65,83,83
+  NumpadDecimal,".",65,83,83
   IntlBackslash,Backslash,10,86,86
-  ContextMenu,Context Menu,110,57437,127
+  ContextMenu,Menu,110,57437,127
   Power,Power,null,57438,116
-  NumpadEqual,Equal,81,89,117
+  NumpadEqual,"=",81,89,117
   F13,F13,105,100,183
   F14,F14,107,101,184
   F15,F15,113,102,185
@@ -134,19 +134,19 @@ keys[197]{code,label,mac,win,evdev}:
   AudioVolumeDown,Volume Down,73,57390,114
   NumpadComma,Comma,95,126,121
   IntlRo,Ro,94,115,89
-  KanaMode,Kana Mode,null,112,93
+  KanaMode,"カナ",null,112,93
   IntlYen,Yen,93,125,124
-  Convert,Convert,null,121,92
-  NonConvert,Non Convert,null,123,94
-  Lang1,Lang1,104,114,122
-  Lang2,Lang2,102,113,123
+  Convert,"変換",null,121,92
+  NonConvert,"無変換",null,123,94
+  Lang1,"かな",104,114,122
+  Lang2,"英数",102,113,123
   Lang3,Lang3,null,120,90
   Lang4,Lang4,null,119,91
   Lang5,Lang5,null,null,85
   Abort,Abort,null,null,null
   Props,Props,null,null,null
-  NumpadParenLeft,Paren,null,null,179
-  NumpadParenRight,Paren,null,null,180
+  NumpadParenLeft,Paren Left,null,null,179
+  NumpadParenRight,Paren Right,null,null,180
   NumpadBackspace,Backspace,null,null,null
   NumpadMemoryStore,Memory Store,null,null,null
   NumpadMemoryRecall,Memory Recall,null,null,null
@@ -155,11 +155,11 @@ keys[197]{code,label,mac,win,evdev}:
   NumpadMemorySubtract,Memory Subtract,null,null,null
   NumpadClear,Clear,null,null,null
   NumpadClearEntry,Clear Entry,null,null,null
-  ControlLeft,Control,59,29,29
+  ControlLeft,Ctrl,59,29,29
   ShiftLeft,Shift,56,42,42
   AltLeft,Alt,58,56,56
   MetaLeft,Meta,55,57435,125
-  ControlRight,Control,62,57373,97
+  ControlRight,Ctrl,62,57373,97
   ShiftRight,Shift,60,54,54
   AltRight,Alt,61,57400,100
   MetaRight,Meta,54,57436,126
