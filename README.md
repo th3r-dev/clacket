@@ -116,6 +116,23 @@ The key table isn't written by hand. `scripts/gen-keys.mjs` builds it from Chrom
 
 Pull request titles follow [Conventional Commits](https://www.conventionalcommits.org) (`feat:`, `fix:`, `perf:`). PRs are squash-merged, so each title becomes one commit on `main`. From those commits, [release-please](https://github.com/googleapis/release-please) keeps a release PR open with the next version number and a changelog of new features and fixes. Merging that PR tags the version, and CI attaches the installers for all three systems to the release.
 
+### macOS code signing
+
+macOS ties the Input Monitoring permission to an app's code signature. Without a stable signature every build gets a fresh ad-hoc identity, so each update looks like a different app and the permission is dropped — the app launches but hears nothing until you grant it again. A Developer ID signature keeps one identity across updates (it's based on your Team ID and the `app.clacket` bundle id, not the build), so the permission carries over and the release is also notarized, which clears Gatekeeper's "unidentified developer" warning.
+
+The release workflow signs and notarizes when these repository secrets are set (**Settings → Secrets and variables → Actions**); with none set it falls back to an ad-hoc build, which still works.
+
+| Secret | What it is |
+|---|---|
+| `APPLE_CERTIFICATE` | Your **Developer ID Application** certificate, exported from Keychain as a `.p12` and base64-encoded (`base64 -i cert.p12 \| pbcopy`). |
+| `APPLE_CERTIFICATE_PASSWORD` | The password you set when exporting the `.p12`. |
+| `APPLE_SIGNING_IDENTITY` | The identity name, e.g. `Developer ID Application: Your Name (TEAMID)`. |
+| `APPLE_ID` | The Apple ID email for notarization. |
+| `APPLE_PASSWORD` | An [app-specific password](https://support.apple.com/en-us/102654) for that Apple ID, not the account password. |
+| `APPLE_TEAM_ID` | Your 10-character team id, from [the membership page](https://developer.apple.com/account#MembershipDetailsCard). |
+
+Getting the certificate needs an [Apple Developer Program](https://developer.apple.com/programs/) membership ($99/year). In its portal create a **Developer ID Application** certificate, install it in Keychain, then right-click it → **Export** to get the `.p12`. [`src-tauri/entitlements.plist`](src-tauri/entitlements.plist) carries the hardened-runtime entitlement notarization needs.
+
 ## Credits
 
 - Switch recordings: [kbsim](https://github.com/tplai/kbsim) by Thomas Lai, MIT license.
