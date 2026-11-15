@@ -39,6 +39,9 @@ pub struct Settings {
     pub move_volume: f32,
     pub haptic: bool,
     pub license_key: Option<String>,
+    /// Device-bound activation token from the server. Pro is on only while this verifies for
+    /// this machine (see license::verify_token). The key alone no longer turns Pro on.
+    pub license_token: Option<String>,
 }
 
 pub const DEFAULT_SWITCH: &str = "cream";
@@ -108,6 +111,7 @@ impl Default for Settings {
             move_volume: 0.3,
             haptic: false,
             license_key: None,
+            license_token: None,
         }
     }
 }

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Privacy Policy · Clacket</title>
+  <meta name="description" content="What Clacket sends, and when. It goes online only to activate or move your license; it never records or sends what you type.">
+  <link rel="icon" href="/img/icon-128.png">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <header class="nav">
+    <a class="brand" href="/"><img src="/img/icon-128.png" alt="" width="32" height="32"><span>Clacket</span></a>
+    <nav aria-label="Sections">
+      <a href="/#features">Features</a>
+      <a href="/#pricing">Pricing</a>
+      <a class="btn small" href="/#download">Download</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <input type="checkbox" id="lang-th" class="lang-switch" hidden>
+      <div class="langbar" role="group" aria-label="Language / ภาษา">
+        <label for="lang-th" class="lang-en">EN</label>
+        <label for="lang-th" class="lang-th">ไทย</label>
+      </div>
+
+      <article class="legal lang-en-only" lang="en">
+        <h1>Privacy Policy</h1>
+        <p class="updated">Last updated 15 November 2026</p>
+
+        <p>Clacket plays mechanical keyboard sounds as you type. It reads key and mouse events only to decide which sound to play, on your computer. It does not record, store, or send what you type. There is no account, no analytics, and no tracking.</p>
+
+        <h2>When Clacket uses the internet</h2>
+        <p>Clacket connects to our license server (<code>pay.th33raphat.dev</code>) for one purpose: activating Pro on a device, and moving it to another device. These are the only times the app goes online. The free version never needs to.</p>
+
+        <h2>What activation sends</h2>
+        <p>When you activate or deactivate a license, Clacket sends two things and nothing else:</p>
+        <ul>
+          <li><strong>Your license key</strong> — the key you bought, so the server knows which license you mean.</li>
+          <li><strong>A salted device fingerprint</strong> — a one-way SHA-256 hash of an identifier your operating system assigns to the machine. It is not reversible: we cannot read your machine id, your name, or anything personal from it. It only lets the server tell one device apart from another. Clacket also sends your device's host name as a label, so you can recognise which machine holds the license.</li>
+        </ul>
+        <p>One license is active on one device at a time. Activating binds the key to that device; the server returns a signed token that proves Pro on that machine, and after that Clacket runs offline. To use the key on another computer, you deactivate it first, which frees it. Your keystrokes are never part of any of this.</p>
+
+        <h2>Buying Pro</h2>
+        <p>Payment is handled by <a href="https://stripe.com" rel="noopener">Stripe</a>; Clacket never sees your card details. When you buy, we store a license record: the license key, and the email address and name Stripe gives us for the purchase. We keep it so we can show you your key again if you lose it, and so a refund can switch the license off. We do not use it for marketing.</p>
+
+        <h2>What we don't collect</h2>
+        <ul>
+          <li>No keystrokes, ever — not recorded, not stored, not sent.</li>
+          <li>No analytics, telemetry, or usage tracking.</li>
+          <li>No advertising, and no sharing or selling of data.</li>
+        </ul>
+        <p>Most of this is enforced in the build. The app ships with a check that fails if networking code appears beyond the single client used for activation, and the settings window is blocked from making any network request at all.</p>
+
+        <h2>Contact</h2>
+        <p>Questions about privacy or your data? Reply to your Stripe receipt, or reach us through <a href="/">clacket.th33raphat.dev</a>.</p>
+      </article>
+
+      <article class="legal lang-th-only" lang="th">
+        <h1>นโยบายความเป็นส่วนตัว</h1>
+        <p class="updated">ปรับปรุงล่าสุด 15 พฤศจิกายน 2026</p>
+
+        <p>Clacket เล่นเสียงคีย์บอร์ดกลไกตอนที่คุณพิมพ์ โดยอ่านเหตุการณ์กดแป้นและเมาส์เพื่อเลือกเสียงที่จะเล่นบนเครื่องของคุณเท่านั้น ไม่มีการอัด เก็บ หรือส่งสิ่งที่คุณพิมพ์ออกไป ไม่มีบัญชีผู้ใช้ ไม่มี analytics และไม่มีการติดตามใด ๆ</p>
+
+        <h2>Clacket ใช้อินเทอร์เน็ตตอนไหน</h2>
+        <p>Clacket ต่อไปที่เซิร์ฟเวอร์ไลเซนส์ของเรา (<code>pay.th33raphat.dev</code>) เพื่ออย่างเดียวคือเปิดใช้งาน Pro บนเครื่อง และย้ายไปเครื่องอื่น นอกจากสองจังหวะนี้แอปก็ไม่ได้ออกเน็ตเลย ส่วนรุ่นฟรีไม่ต้องต่อเน็ตเลยสักครั้ง</p>
+
+        <h2>ตอนเปิดใช้งานส่งอะไรบ้าง</h2>
+        <p>พอคุณเปิดหรือปิดใช้งานไลเซนส์ Clacket จะส่งแค่สองอย่าง ไม่มีอย่างอื่น</p>
+        <ul>
+          <li><strong>license key ของคุณ</strong> คือคีย์ที่คุณซื้อมา เพื่อให้เซิร์ฟเวอร์รู้ว่าเป็นไลเซนส์ไหน</li>
+          <li><strong>ลายนิ้วมือเครื่องที่ผ่านการแฮช</strong> เป็นค่าแฮช SHA-256 ทางเดียวของรหัสที่ระบบปฏิบัติการตั้งให้เครื่อง ย้อนกลับไม่ได้ เราอ่านรหัสเครื่อง ชื่อ หรือข้อมูลส่วนตัวของคุณจากค่านี้ไม่ได้ ใช้แค่แยกว่าเครื่องไหนเป็นเครื่องไหนเท่านั้น นอกจากนี้ Clacket ยังส่งชื่อโฮสต์ของเครื่องไปเป็นป้ายกำกับ เพื่อให้คุณดูออกว่าเครื่องไหนถือไลเซนส์อยู่</li>
+        </ul>
+        <p>หนึ่งไลเซนส์ใช้งานได้ทีละหนึ่งเครื่อง พอเปิดใช้งาน คีย์จะผูกกับเครื่องนั้น เซิร์ฟเวอร์จะส่ง token ที่เซ็นชื่อแล้วกลับมายืนยันว่า Pro เปิดอยู่บนเครื่องนั้น จากนั้น Clacket ก็ทำงานออฟไลน์ ถ้าจะใช้คีย์บนเครื่องอื่น ให้ปิดใช้งานที่เครื่องเดิมก่อน คีย์ก็จะว่างให้ย้าย ทั้งหมดนี้ไม่มีสิ่งที่คุณพิมพ์เข้ามาเกี่ยวเลย</p>
+
+        <h2>การซื้อ Pro</h2>
+        <p>การชำระเงินจัดการโดย <a href="https://stripe.com" rel="noopener">Stripe</a> Clacket ไม่เห็นข้อมูลบัตรของคุณ ตอนคุณซื้อ เราเก็บข้อมูลไลเซนส์ไว้ คือ license key กับอีเมลและชื่อที่ Stripe ส่งมาให้สำหรับการซื้อครั้งนั้น เราเก็บไว้เพื่อแสดงคีย์ให้คุณอีกครั้งถ้าทำหาย และเพื่อให้การคืนเงินปิดไลเซนส์ได้ เราไม่ได้เอาไปใช้ทำการตลาด</p>
+
+        <h2>สิ่งที่เราไม่เก็บ</h2>
+        <ul>
+          <li>ไม่เก็บสิ่งที่คุณพิมพ์ ไม่ว่าตอนไหน ไม่อัด ไม่เก็บ ไม่ส่ง</li>
+          <li>ไม่มี analytics telemetry หรือการติดตามการใช้งาน</li>
+          <li>ไม่มีโฆษณา และไม่มีการแชร์หรือขายข้อมูล</li>
+        </ul>
+        <p>ส่วนใหญ่ของเรื่องนี้บังคับไว้ตั้งแต่ตอน build แอปมากับตัวตรวจที่จะ fail ถ้ามีโค้ดเครือข่ายโผล่เกินกว่า client ตัวเดียวที่ใช้เปิดใช้งาน ส่วนหน้าต่างตั้งค่าก็ถูกบล็อกไม่ให้ยิง request ออกเน็ตได้เลย</p>
+
+        <h2>ติดต่อเรา</h2>
+        <p>มีคำถามเรื่องความเป็นส่วนตัวหรือข้อมูลของคุณ ตอบกลับใบเสร็จ Stripe ของคุณ หรือติดต่อผ่าน <a href="/">clacket.th33raphat.dev</a> ได้เลย</p>
+      </article>
+    </section>
+  </main>
+
+  <footer>
+    <p class="foot-links"><a href="/privacy">Privacy</a> · <a href="/terms">Terms</a></p>
+    <p>Clacket · Switch recordings from kbsim (MIT). Effects from Kenney (CC0). Fonts: Mali and Kanit (SIL OFL).</p>
+  </footer>
+</body>
+</html>

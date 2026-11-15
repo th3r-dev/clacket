@@ -45,6 +45,10 @@ use tauri_plugin_dialog::DialogExt;
 /// Opened in the user's browser, never fetched by Clacket. Set these before release.
 const BUY_URL: &str = "https://buy.stripe.com/dRm00l3J6bkdatA9P32kw00";
 const RECOVER_URL: &str = "https://pay.th33raphat.dev/recover";
+/// The ONLY URLs Clacket itself (Rust, off the UI thread) ever requests — license activation.
+/// The settings webview never calls these; its CSP stays locked to IPC only.
+const ACTIVATE_URL: &str = "https://pay.th33raphat.dev/activate";
+const DEACTIVATE_URL: &str = "https://pay.th33raphat.dev/deactivate";
 const PRO_REQUIRED: &str = "PRO_REQUIRED";
 
 struct App {
@@ -103,13 +107,16 @@ impl App {
         Ok(())
     }
 
+    /// Pro is on iff a stored activation token verifies offline for THIS device. The key alone is
+    /// not enough — it only supplies the licensee's name for display.
     fn load_license(&self) {
-        let key = self.s.lock().unwrap().license_key.clone();
-        let (pro, name, note) = match key.as_deref().map(license::verify) {
-            Some(Ok(l)) => (true, Some(l.name), None),
+        let (key, token) = { let s = self.s.lock().unwrap(); (s.license_key.clone(), s.license_token.clone()) };
+        let (pro, name, note) = match token.as_deref().map(license::verify_token) {
+            Some(Ok(_)) => (true, key.as_deref().and_then(|k| license::verify(k).ok()).map(|l| l.name), None),
             Some(Err(license::LicenseError::Revoked)) => (false, None, Some("This key was refunded, so Pro is off. Your settings are kept.".to_string())),
-            Some(Err(_)) => (false, None, Some("The saved license key isn't valid anymore.".to_string())),
-            None => (false, None, None),
+            Some(Err(_)) => (false, None, Some("This device isn't activated for Pro anymore. Activate your key again to turn it back on.".to_string())),
+            // a key saved by an older version, or an activation that never finished: Pro is off until activated here
+            None => (false, None, key.as_deref().map(|_| "You have a key, but Pro isn't active on this device yet. Open the license box and activate it.".to_string())),
         };
         self.pro.store(pro, Relaxed);
         *self.licensed_to.lock().unwrap() = name;
@@ -505,26 +512,64 @@ fn preset(app: AppState, action: String, name: String, new_name: Option<String>)
     })
 }
 
-#[tauri::command]
-fn activate_license(app: AppState, key: String) -> Result<String, String> {
+/// Online activation, off the UI thread (ureq is blocking). The webview shows "Activating…" and
+/// waits for the `license-result` event this emits — the paste, file and deep-link paths all land
+/// here, so there's one flow. On success the key + device-bound token are persisted and Pro turns on.
+fn start_activate(app: Arc<App>, key: String) {
     let key = license::extract(&key).unwrap_or(key);
-    match license::verify(&key) {
-        Ok(l) => {
-            app.s.lock().unwrap().license_key = Some(key);
-            app.load_license();
-            app.change(true, |_| Ok(()))?;
-            Ok(l.name)
-        }
-        Err(license::LicenseError::Revoked) => Err("This key was refunded, so it can't turn on Pro.".into()),
-        Err(_) => Err("This key isn't valid. Copy the whole key, starting with CLACKET-.".into()),
-    }
+    std::thread::spawn(move || {
+        let payload = match license::activate(ACTIVATE_URL, &key) {
+            Ok((lic, token)) => {
+                {
+                    let mut s = app.s.lock().unwrap();
+                    s.license_key = Some(key);
+                    s.license_token = Some(token);
+                }
+                app.load_license();
+                let _ = app.change(true, |_| Ok(())); // save, rebuild the bank for Pro, refresh tray + window
+                json!({ "ok": true, "action": "activate", "name": lic.name })
+            }
+            Err(e) => json!({ "ok": false, "action": "activate", "error": e.code() }),
+        };
+        let _ = app.handle.emit("license-result", payload);
+    });
+}
+
+/// Online deactivation: frees this device's seat so the key can move. If the server can't be
+/// reached the token is kept (the seat wasn't freed), and the UI tells the user to go online.
+fn start_deactivate(app: Arc<App>) {
+    let Some(key) = app.s.lock().unwrap().license_key.clone() else {
+        return; // nothing to deactivate
+    };
+    std::thread::spawn(move || {
+        let payload = match license::deactivate(DEACTIVATE_URL, &key) {
+            Ok(()) => {
+                {
+                    let mut s = app.s.lock().unwrap();
+                    s.license_key = None;
+                    s.license_token = None;
+                }
+                app.load_license();
+                let _ = app.change(true, |_| Ok(()));
+                json!({ "ok": true, "action": "deactivate" })
+            }
+            // only Offline can land here (any server reply counts as freed); keep Pro on, say so
+            Err(_) => json!({ "ok": false, "action": "deactivate", "error": "offline" }),
+        };
+        let _ = app.handle.emit("license-result", payload);
+    });
+}
+
+#[tauri::command]
+fn activate_license(app: AppState, key: String) -> Result<(), String> {
+    start_activate(app.inner().clone(), key);
+    Ok(())
 }
 
 #[tauri::command]
 fn remove_license(app: AppState) -> Result<(), String> {
-    app.s.lock().unwrap().license_key = None;
-    app.load_license();
-    app.change(true, |_| Ok(()))
+    start_deactivate(app.inner().clone());
+    Ok(())
 }
 
 /// Hands a fixed URL to the OS. Clacket itself makes no request.
@@ -639,9 +684,9 @@ fn main() {
             h.deep_link().on_open_url(move |e| {
                 for url in e.urls() {
                     if let Some(key) = license::extract(url.as_str()) {
-                        let r = activate_license(a.handle.state::<Arc<App>>(), key);
                         open_settings(&a.handle);
-                        let _ = a.handle.emit("license-result", r.map_err(|e| e.to_string()));
+                        let _ = a.handle.emit("activating", ()); // the window shows "Activating…"
+                        start_activate(a.clone(), key); // emits license-result when the server answers
                     }
                 }
             });

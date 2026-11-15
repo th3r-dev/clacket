@@ -1,6 +1,7 @@
-// Sells Clacket Pro. Only the buyer's browser and Stripe talk to this Worker; the app never does.
+// Sells Clacket Pro and activates it. The buyer's browser and Stripe drive the sale; the desktop
+// app talks to /activate and /deactivate to bind a key to one device and to move it between devices.
 import Stripe from "stripe";
-import { signLicense } from "./license.js";
+import { signLicense, signActivation, parseKey, canonicalKey } from "./license.js";
 
 const stripeFor = (env) => new Stripe(env.STRIPE_SECRET_KEY, { httpClient: Stripe.createFetchHttpClient() });
 
@@ -53,9 +54,60 @@ async function webhook(req, env) {
     await issueForSession(env, event.data.object);
   } else if (event.type === "charge.refunded" && event.data.object.refunded) {
     // full refunds only; the lid goes into the app's revoked.txt at the next release
-    await env.DB.prepare("UPDATE licenses SET revoked = 1 WHERE payment_intent = ?").bind(event.data.object.payment_intent).run();
+    const pi = event.data.object.payment_intent;
+    await env.DB.prepare("UPDATE licenses SET revoked = 1 WHERE payment_intent = ?").bind(pi).run();
+    // free the seat too, so a revoked key can't keep a device bound
+    await env.DB.prepare("DELETE FROM activations WHERE lid IN (SELECT lid FROM licenses WHERE payment_intent = ?)").bind(pi).run();
   }
   return Response.json({ received: true });
+}
+
+/** Looks up the license a request is for and checks the pasted key matches the stored one. */
+async function licenseFor(env, key, cols = "key, revoked") {
+  const parsed = parseKey(key);
+  if (!parsed?.lid) return null;
+  const row = await env.DB.prepare(`SELECT ${cols} FROM licenses WHERE lid = ?`).bind(parsed.lid).first();
+  if (!row || row.key !== canonicalKey(key)) return null;
+  return { lid: parsed.lid, ...row };
+}
+
+/** POST { key, device_hash, device_name? } -> { token } | { error } (409 in_use). Binds to one device. */
+async function activate(req, env) {
+  let b;
+  try { b = await req.json(); } catch { return Response.json({ error: "invalid" }, { status: 400 }); }
+  const device_hash = typeof b.device_hash === "string" ? b.device_hash : "";
+  const device_name = typeof b.device_name === "string" ? b.device_name.slice(0, 120) : null;
+  if (!/^[0-9a-f]{64}$/.test(device_hash)) return Response.json({ error: "invalid" }, { status: 400 });
+
+  const lic = await licenseFor(env, b.key);
+  if (!lic) return Response.json({ error: "invalid" }, { status: 403 });
+  if (lic.revoked) return Response.json({ error: "revoked" }, { status: 403 });
+
+  const seat = await env.DB.prepare("SELECT device_hash FROM activations WHERE lid = ?").bind(lic.lid).first();
+  if (seat) {
+    // a different device holds the seat -> refuse; the same device -> idempotent re-activation
+    if (seat.device_hash !== device_hash) return Response.json({ error: "in_use" }, { status: 409 });
+  } else {
+    await env.DB.prepare("INSERT INTO activations (lid, device_hash, device_name, created_at) VALUES (?, ?, ?, ?) ON CONFLICT(lid) DO NOTHING")
+      .bind(lic.lid, device_hash, device_name, Date.now()).run();
+    // re-read so two devices racing the first activation can't both win
+    const now = await env.DB.prepare("SELECT device_hash FROM activations WHERE lid = ?").bind(lic.lid).first();
+    if (now?.device_hash !== device_hash) return Response.json({ error: "in_use" }, { status: 409 });
+  }
+  const token = await signActivation(env.LICENSE_SIGNING_KEY, { lid: lic.lid, device: device_hash });
+  return Response.json({ token });
+}
+
+/** POST { key, device_hash } -> { ok: true }. Frees this device's seat; no-op if it isn't held. */
+async function deactivate(req, env) {
+  let b;
+  try { b = await req.json(); } catch { return Response.json({ error: "invalid" }, { status: 400 }); }
+  const device_hash = typeof b.device_hash === "string" ? b.device_hash : "";
+  // a refunded key may still deactivate to release its seat, so don't check revoked here
+  const lic = await licenseFor(env, b.key, "key");
+  if (!lic) return Response.json({ error: "invalid" }, { status: 403 });
+  await env.DB.prepare("DELETE FROM activations WHERE lid = ? AND device_hash = ?").bind(lic.lid, device_hash).run();
+  return Response.json({ ok: true });
 }
 
 async function thanks(url, env) {
@@ -87,7 +139,7 @@ async function thanks(url, env) {
 <div class="row"><a class="b" id="open" href="${esc(deep)}">Open in Clacket</a>
 <a class="b s" id="dl" href="${file}" download="clacket.license">Download clacket.license</a>
 <button class="s" id="copy" type="button">Copy key</button></div>
-<p class="m">Clacket checks the key on your computer. It never connects to the internet.</p>
+<p class="m">Clacket connects once to activate this key on this device, then runs offline. To use the key on another computer, deactivate it here first. It never records or sends what you type.</p>
 <script>
 (function(){
   try{ localStorage.setItem('clacket_key', ${jsKey}); }catch(e){}
@@ -115,6 +167,8 @@ export default {
   async fetch(req, env) {
     const url = new URL(req.url);
     if (url.pathname === "/stripe/webhook" && req.method === "POST") return webhook(req, env);
+    if (url.pathname === "/activate" && req.method === "POST") return activate(req, env);
+    if (url.pathname === "/deactivate" && req.method === "POST") return deactivate(req, env);
     if (url.pathname === "/thanks" && req.method === "GET") return thanks(url, env);
     if (url.pathname === "/recover" && req.method === "GET") return recover(env);
     return page("Not found", "<h1>Not found</h1>", 404);
