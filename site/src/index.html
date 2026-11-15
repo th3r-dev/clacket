@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light dark">
+  <title>Clacket: mechanical keyboard sounds for any keyboard</title>
+  <meta name="description" content="Clacket plays real mechanical switch recordings as you type, on macOS, Windows and Linux. 13 switches, a sound for any key, mouse and plug-in sounds. Never connects to the internet.">
+  <meta property="og:title" content="Clacket: every key, a little clack">
+  <meta property="og:description" content="Mechanical keyboard sounds for the keyboard you already have. Try every switch in your browser.">
+  <meta property="og:image" content="https://clacket.th33raphat.dev/img/social-preview.png">
+  <meta property="og:url" content="https://clacket.th33raphat.dev/">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" href="/img/icon-128.png">
+  <link rel="preload" href="/fonts/mali-latin-600-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/demo.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#demo">Skip to the demo</a>
+
+  <header class="nav">
+    <a class="brand" href="/"><img src="/img/icon-128.png" alt="" width="32" height="32"><span>Clacket</span></a>
+    <nav aria-label="Sections">
+      <a href="#demo">Try it</a>
+      <a href="#features">Features</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn small" href="#download">Download</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <h1>Every key,<br>a little <em>clack</em>.</h1>
+      <p class="lede">Clacket plays real mechanical switch recordings as you type, on the keyboard you already have. It lives in your menu bar, uses almost nothing, and never connects to the internet.</p>
+      <div class="cta">
+        <a class="btn" href="#download">Download free</a>
+        <a class="btn ghost" href="#demo">Hear it first</a>
+      </div>
+      <p class="fine">macOS, Windows and Linux · Free, with a $5 Pro upgrade</p>
+    </section>
+
+    <section id="demo" class="demo" aria-labelledby="demo-title">
+      <div class="demo-head">
+        <h2 id="demo-title">Try every switch</h2>
+        <p>Pick a switch, then type anywhere on this page. On a phone, tap the keys.</p>
+      </div>
+      <div class="switches" id="switches" role="radiogroup" aria-label="Switch"></div>
+      <div class="board-wrap">
+        <div class="board" id="board" aria-label="Keyboard. Tap a key to hear it."></div>
+        <div class="demo-bar">
+          <label class="vol">Volume <input type="range" id="vol" min="0" max="1" step="0.05" value="0.7"></label>
+          <p class="now" id="now" aria-live="polite">NK Cream · Buttery, rounded</p>
+          <button class="btn ghost small" id="mute" aria-pressed="false">Mute</button>
+        </div>
+      </div>
+      <p class="fine center">These are the same recordings Clacket plays. In the app they follow your typing everywhere, not just on this page.</p>
+    </section>
+
+    <section id="features" class="features" aria-labelledby="features-title">
+      <h2 id="features-title">What you get</h2>
+      <div class="feature">
+        <div>
+          <h3>Thirteen recorded switches</h3>
+          <p>Linear, tactile and clicky, from a soft NK Cream to a buckling spring. Space, Enter and Backspace get their own recordings where the switch has them, plus a quiet sound when you lift the key.</p>
+        </div>
+        <img src="/img/light-sound.png" alt="Clacket's switch picker: cards for each switch with a drawing in its stem color." width="1400" height="1018" loading="lazy">
+      </div>
+      <div class="feature flip">
+        <div>
+          <h3>A sound for any key</h3>
+          <p>Click a key on the on-screen keyboard, or just press it, and give it any switch's sound or your own MP3 or WAV. The drawing follows your keyboard's shape, ANSI, ISO or JIS, and shows your own language's letters.</p>
+        </div>
+        <img src="/img/light-keyboard.png" alt="Clacket's keyboard editor with the space bar set to Holy Panda." width="1400" height="1018" loading="lazy">
+      </div>
+      <div class="feature">
+        <div>
+          <h3>Mouse, trackpad and plugs</h3>
+          <p>Clicks, scroll ticks, taps, swipes and pinches. A sound when you plug in a USB drive, a phone, a charger, a display or headphones, with the port when your system reports it.</p>
+        </div>
+        <img src="/img/dark-mouse.png" alt="The mouse and devices tab in dark mode." width="1400" height="1018" loading="lazy">
+      </div>
+      <ul class="facts">
+        <li><strong>23 MB</strong> of memory while it waits</li>
+        <li><strong>0%</strong> CPU when you're not typing</li>
+        <li><strong>5 MB</strong> program, every sound built in</li>
+        <li><strong>0</strong> network connections, ever</li>
+      </ul>
+    </section>
+
+    <section id="pricing" class="pricing" aria-labelledby="pricing-title">
+      <h2 id="pricing-title">Free, or $5 once</h2>
+      <div class="plans">
+        <div class="plan">
+          <h3>Free</h3>
+          <p class="price">$0</p>
+          <ul>
+            <li>4 switches: NK Cream, MX Brown, MX Blue, Topre</li>
+            <li>Volume, key-up sound, mute shortcut</li>
+            <li>Opens at login, lives in the menu bar</li>
+          </ul>
+          <a class="btn ghost" href="#download">Download</a>
+        </div>
+        <div class="plan pro">
+          <h3>Pro</h3>
+          <p class="price">$5 <span>once, yours for good</span></p>
+          <ul>
+            <li>All 13 switches</li>
+            <li>A sound for any key, your own files, presets</li>
+            <li>Mouse, trackpad and gesture sounds</li>
+            <li>Plug-in sounds for USB, chargers, displays and headphones</li>
+          </ul>
+          <a class="btn" id="buy" href="#download">Get Pro – $5</a>
+          <p class="fine">Pay in your browser, get a key by email. Clacket checks it on your computer, offline.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="privacy" aria-labelledby="privacy-title">
+      <h2 id="privacy-title">It never phones home</h2>
+      <p>Clacket listens to your keys only to play a sound. It doesn't record what you type, keep it, or send anything anywhere. There is no account, no analytics and no update check. The build fails if networking code gets into the app.</p>
+    </section>
+
+    <section id="download" class="download" aria-labelledby="download-title">
+      <h2 id="download-title">Download Clacket</h2>
+      <p class="fine" id="version-line">Version <span id="version">0.2.0</span></p>
+      <div class="dl">
+        <a class="btn" href="/download/mac" data-os="mac">macOS<small>Apple silicon and Intel</small></a>
+        <a class="btn ghost" href="/download/windows" data-os="windows">Windows<small>10 and 11</small></a>
+        <a class="btn ghost" href="/download/linux" data-os="linux">Linux<small>.deb for Debian and Ubuntu</small></a>
+      </div>
+      <details class="help">
+        <summary>First launch</summary>
+        <p><strong>macOS:</strong> Clacket asks for Input Monitoring so it can hear your keys. Turn it on in System Settings → Privacy &amp; Security → Input Monitoring, then reopen Clacket. If macOS says the developer can't be verified, right-click Clacket in Applications and choose Open.</p>
+        <p><strong>Linux:</strong> add yourself to the <code>input</code> group, then log out and back in.</p>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    <p>Clacket · Switch recordings from kbsim (MIT). Effects from Kenney (CC0). Fonts: Mali and Kanit (SIL OFL).</p>
+  </footer>
+</body>
+</html>
