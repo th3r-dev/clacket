@@ -6,11 +6,18 @@ name: Release
 on:
   push:
     branches: [main]
+  # Rebuild and re-attach installers for an existing tag (e.g. after a failed build)
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing release tag to rebuild, e.g. v0.2.0
+        required: true
 
 permissions: {}
 
 jobs:
   release-please:
+    if: github.event_name == 'push'
     runs-on: ubuntu-latest
     permissions:
       contents: write       # tags and releases
@@ -27,7 +34,7 @@ jobs:
 
   build:
     needs: release-please
-    if: needs.release-please.outputs.created == 'true'
+    if: ${{ always() && (needs.release-please.outputs.created == 'true' || github.event_name == 'workflow_dispatch') }}
     strategy:
       fail-fast: false
       matrix:
@@ -44,9 +51,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     permissions:
       contents: write  # upload installers to the release
+    env:
+      TAG: ${{ needs.release-please.outputs.tag || inputs.tag }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || '' }}
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@39008827e6b4319a349e9a42dfc90579dd25f1ca # stable
         with:
@@ -60,27 +70,35 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev libasound2-dev libxdo-dev
       - run: cargo install tauri-cli --version "^2" --locked
-      - uses: tauri-apps/tauri-action@1deb371b0cd8bd54025b384f1cd735e725c4060f # v1.0.0
+      # macOS signing + notarization only when the secrets exist. Passing them empty makes
+      # Tauri try to import an empty certificate and fail; without them it signs ad hoc.
+      - name: Apple signing (optional)
+        if: runner.os == 'macOS'
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # macOS signing + notarization. Without these the .dmg is unsigned and Gatekeeper
-          # warns on first open. Add them as repo secrets when you have an Apple Developer ID.
           APPLE_CERTIFICATE: ${{ secrets.APPLE_CERTIFICATE }}
           APPLE_CERTIFICATE_PASSWORD: ${{ secrets.APPLE_CERTIFICATE_PASSWORD }}
           APPLE_SIGNING_IDENTITY: ${{ secrets.APPLE_SIGNING_IDENTITY }}
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        run: |
+          if [[ -z "$APPLE_CERTIFICATE" ]]; then echo "No Apple certificate: building an ad-hoc signed app."; exit 0; fi
+          for v in APPLE_CERTIFICATE APPLE_CERTIFICATE_PASSWORD APPLE_SIGNING_IDENTITY APPLE_ID APPLE_PASSWORD APPLE_TEAM_ID; do
+            if [[ -n "${!v}" ]]; then { echo "$v<<__END__"; echo "${!v}"; echo "__END__"; } >> "$GITHUB_ENV"; fi
+          done
+      - uses: tauri-apps/tauri-action@1deb371b0cd8bd54025b384f1cd735e725c4060f # v1.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tauriScript: cargo tauri
           projectPath: src-tauri
-          tagName: ${{ needs.release-please.outputs.tag }}
+          tagName: ${{ env.TAG }}
           releaseDraft: false
           args: ${{ matrix.args }}
 
   deploy-worker:
     needs: release-please
-    if: needs.release-please.outputs.created == 'true'
+    if: github.event_name == 'push' && needs.release-please.outputs.created == 'true'
     runs-on: ubuntu-latest
     environment: production
     permissions:
