@@ -38,9 +38,21 @@ export async function issueForSession(env, session) {
   return { key, email, created: true };
 }
 
+/** Emails the key(s). Never throws: the key is already saved and shown on the thanks page,
+ *  and /recover can resend, so a mail outage must not fail the payment flow. */
 export async function sendKey(env, email, keys) {
-  if (!env.EMAIL) return;
+  if (!env.EMAIL) return false;
   const list = keys.join("\n\n");
+  try {
+    await sendMail(env, email, keys, list);
+    return true;
+  } catch (e) {
+    console.error("key email failed", e?.message ?? e);
+    return false;
+  }
+}
+
+async function sendMail(env, email, keys, list) {
   await env.EMAIL.send({
     to: email,
     from: { email: env.FROM_EMAIL, name: env.APP_NAME },

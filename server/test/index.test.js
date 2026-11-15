@@ -52,6 +52,14 @@ describe("webhook", () => {
   });
 });
 
+describe("email", () => {
+  it("a failing mail service doesn't fail the purchase", async () => {
+    const { sendKey } = await import("../src/index.js");
+    const broken = { ...env, EMAIL: { send: async () => { throw new Error("domain not onboarded"); } } };
+    expect(await sendKey(broken, "jane@example.com", ["CLACKET-X"])).toBe(false);
+  });
+});
+
 describe("pages", () => {
   it("thanks shows the key and deep link", async () => {
     await post(paid("thanks"));
