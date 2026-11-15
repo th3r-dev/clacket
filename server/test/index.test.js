@@ -53,15 +53,42 @@ describe("webhook", () => {
 });
 
 describe("pages", () => {
-  it("thanks shows the key and deep link", async () => {
+  it("thanks shows the key, deep link, and auto-downloads the license", async () => {
     await post(paid("thanks"));
     const html = await (await SELF.fetch("https://x/thanks?session_id=cs_test_thanks")).text();
     expect(html).toContain("clacket://activate?key=CLACKET-");
     expect(html).toContain('download="clacket.license"');
+    expect(html).toContain("getElementById('dl').click()"); // auto-download on load
+    expect(html).toContain("localStorage.setItem('clacket_key'"); // persisted for reload
   });
 
-  it("recover answers the same for known and unknown emails", async () => {
-    const ask = (email) => SELF.fetch("https://x/recover", { method: "POST", body: new URLSearchParams({ email }) }).then((r) => r.text());
-    expect(await ask("jane@example.com")).toBe(await ask("nobody@example.com"));
+  it("thanks reloads itself while a paid session is still settling (paid-but-no-key race)", async () => {
+    // session not in D1 and Stripe retrieve fails (test key) -> processing, 202, self-reload
+    const r = await SELF.fetch("https://x/thanks?session_id=cs_test_notyet_12345");
+    expect(r.status).toBe(202);
+    const html = await r.text();
+    expect(html).toContain("Payment processing");
+    expect(html).toContain("location.replace"); // bounded auto-retry
+  });
+
+  it("thanks stops reloading after the attempt cap", async () => {
+    const r = await SELF.fetch("https://x/thanks?session_id=cs_test_notyet_12345&t=12");
+    expect(r.status).toBe(202);
+    const html = await r.text();
+    expect(html).not.toContain("location.replace");
+    expect(html).toContain("Reload");
+  });
+
+  it("an invalid session id is rejected", async () => {
+    expect((await SELF.fetch("https://x/thanks?session_id=nope")).status).toBe(404);
+    expect((await SELF.fetch("https://x/thanks")).status).toBe(404);
+  });
+
+  it("recover is a help page, not an email resend", async () => {
+    const r = await SELF.fetch("https://x/recover");
+    const html = await r.text();
+    expect(r.status).toBe(200);
+    expect(html).toContain("clacket.license");
+    expect(html).not.toContain("Send my key");
   });
 });

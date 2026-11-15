@@ -516,7 +516,7 @@ fn activate_license(app: AppState, key: String) -> Result<String, String> {
             Ok(l.name)
         }
         Err(license::LicenseError::Revoked) => Err("This key was refunded, so it can't turn on Pro.".into()),
-        Err(_) => Err("This key isn't valid. Copy the whole key from your email, starting with CLACKET-.".into()),
+        Err(_) => Err("This key isn't valid. Copy the whole key, starting with CLACKET-.".into()),
     }
 }
 
@@ -633,7 +633,7 @@ fn main() {
             let a = app.clone();
             devices::start(move |ev| a.on_device(ev));
 
-            // clacket://activate?key=... from the /thanks page or the email
+            // clacket://activate?key=... from the /thanks page
             use tauri_plugin_deep_link::DeepLinkExt;
             let a = app.clone();
             h.deep_link().on_open_url(move |e| {
