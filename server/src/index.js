@@ -38,31 +38,6 @@ export async function issueForSession(env, session) {
   return { key, email, created: true };
 }
 
-/** Emails the key(s). Never throws: the key is already saved and shown on the thanks page,
- *  and /recover can resend, so a mail outage must not fail the payment flow. */
-export async function sendKey(env, email, keys) {
-  if (!env.EMAIL) return false;
-  const list = keys.join("\n\n");
-  try {
-    await sendMail(env, email, keys, list);
-    return true;
-  } catch (e) {
-    console.error("key email failed", e?.message ?? e);
-    return false;
-  }
-}
-
-async function sendMail(env, email, keys, list) {
-  await env.EMAIL.send({
-    to: email,
-    from: { email: env.FROM_EMAIL, name: env.APP_NAME },
-    subject: keys.length > 1 ? "Your Clacket Pro keys" : "Your Clacket Pro key",
-    text: `Thanks for buying Clacket Pro.\n\nYour key:\n\n${list}\n\nOpen Clacket, choose Settings > Upgrade, and paste the key, or open the attached clacket.license file.\nClacket checks the key on your computer and never connects to the internet.\n`,
-    html: `<p>Thanks for buying Clacket Pro.</p><p>Your key:</p>${keys.map((k) => `<pre style="white-space:pre-wrap;word-break:break-all">${esc(k)}</pre>`).join("")}<p>Open Clacket, choose Settings &gt; Upgrade, and paste the key, or open the attached <b>clacket.license</b> file. Clacket checks the key on your computer and never connects to the internet.</p>`,
-    attachments: [{ content: list + "\n", filename: "clacket.license", type: "text/plain", disposition: "attachment" }],
-  });
-}
-
 async function webhook(req, env) {
   const body = await req.text();
   let event;
@@ -74,8 +49,8 @@ async function webhook(req, env) {
     return new Response("bad signature", { status: 400 });
   }
   if (event.type === "checkout.session.completed" && event.data.object.payment_status === "paid") {
-    const { key, email, created } = await issueForSession(env, event.data.object);
-    if (created) await sendKey(env, email, [key]);
+    // record the license so it's in D1 even if the buyer never loads the thanks page
+    await issueForSession(env, event.data.object);
   } else if (event.type === "charge.refunded" && event.data.object.refunded) {
     // full refunds only; the lid goes into the app's revoked.txt at the next release
     await env.DB.prepare("UPDATE licenses SET revoked = 1 WHERE payment_intent = ?").bind(event.data.object.payment_intent).run();
@@ -90,36 +65,27 @@ async function thanks(url, env) {
   if (!row) {
     // the webhook can arrive after the redirect: confirm with Stripe and issue it here
     const s = await stripeFor(env).checkout.sessions.retrieve(id).catch(() => null);
-    if (!s || s.payment_status !== "paid") return page("Payment pending", "<h1>Payment still processing</h1><p>Reload this page in a minute. Your key will also arrive by email.</p>", 202);
-    const r = await issueForSession(env, s);
-    if (r.created) await sendKey(env, r.email, [r.key]);
-    row = r;
+    if (!s || s.payment_status !== "paid") return page("Payment pending", "<h1>Payment still processing</h1><p>Reload this page in a minute.</p>", 202);
+    row = await issueForSession(env, s);
   }
   const deep = `clacket://activate?key=${encodeURIComponent(row.key)}`;
   const file = `data:text/plain;charset=utf-8,${encodeURIComponent(row.key + "\n")}`;
   return page("Your Clacket Pro key", `<h1>You have Clacket Pro</h1>
-<p>Your key is below. A copy is on its way to your email.</p><code id="k">${esc(row.key)}</code>
+<p>Here is your key. <b>Save it</b> — this page and the file below are the only places it is shown.</p><code id="k">${esc(row.key)}</code>
 <div class="row"><a class="b" href="${esc(deep)}">Open in Clacket</a>
 <a class="b s" href="${file}" download="clacket.license">Download clacket.license</a></div>
 <p class="m">Clacket checks the key on your computer. It never connects to the internet.</p>`);
 }
 
-async function recover(req, env) {
-  if (req.method === "GET") {
-    return page("Find your key", `<h1>Find your Clacket Pro key</h1><p>Enter the email you paid with. Your keys will be sent there.</p>
-<form method="post" class="row"><label for="e" class="m" style="width:100%">Email</label><input id="e" name="email" type="email" required autocomplete="email"><button>Send my key</button></form>`);
-  }
-  const ip = req.headers.get("cf-connecting-ip") ?? "local";
-  if (env.RECOVER_LIMIT && !(await env.RECOVER_LIMIT.limit({ key: ip })).success) {
-    return page("Slow down", "<h1>Too many tries</h1><p>Wait a minute, then try again.</p>", 429);
-  }
-  const email = String((await req.formData()).get("email") ?? "").trim().toLowerCase().slice(0, 254);
-  if (email.includes("@")) {
-    const { results } = await env.DB.prepare("SELECT key FROM licenses WHERE lower(email) = ? AND revoked = 0").bind(email).all();
-    if (results.length) await sendKey(env, email, results.map((r) => r.key));
-  }
-  // same answer either way, so this can't be used to learn who bought
-  return page("Check your email", "<h1>Check your email</h1><p>If that address bought Clacket Pro, the key is on its way.</p>");
+/** No email is sent (the key is delivered on the thanks page), so this is a help page,
+ *  not an automated resend. SUPPORT_EMAIL is optional. */
+function recover(env) {
+  const contact = env.SUPPORT_EMAIL
+    ? `<p>Still lost it? Email <a href="mailto:${esc(env.SUPPORT_EMAIL)}">${esc(env.SUPPORT_EMAIL)}</a> from the address you paid with and we'll send it again.</p>`
+    : `<p>Still lost it? Reply to your Stripe payment receipt with the email you paid with and we'll send it again.</p>`;
+  return page("Find your key", `<h1>Find your Clacket Pro key</h1>
+<p>Your key is shown right after you pay, and in the <b>clacket.license</b> file you downloaded then. Keep that file safe — opening it activates Clacket Pro.</p>
+${contact}`);
 }
 
 export default {
@@ -127,7 +93,7 @@ export default {
     const url = new URL(req.url);
     if (url.pathname === "/stripe/webhook" && req.method === "POST") return webhook(req, env);
     if (url.pathname === "/thanks" && req.method === "GET") return thanks(url, env);
-    if (url.pathname === "/recover" && (req.method === "GET" || req.method === "POST")) return recover(req, env);
+    if (url.pathname === "/recover" && req.method === "GET") return recover(env);
     return page("Not found", "<h1>Not found</h1>", 404);
   },
 };

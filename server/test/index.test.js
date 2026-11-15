@@ -52,14 +52,6 @@ describe("webhook", () => {
   });
 });
 
-describe("email", () => {
-  it("a failing mail service doesn't fail the purchase", async () => {
-    const { sendKey } = await import("../src/index.js");
-    const broken = { ...env, EMAIL: { send: async () => { throw new Error("domain not onboarded"); } } };
-    expect(await sendKey(broken, "jane@example.com", ["CLACKET-X"])).toBe(false);
-  });
-});
-
 describe("pages", () => {
   it("thanks shows the key and deep link", async () => {
     await post(paid("thanks"));
@@ -68,8 +60,11 @@ describe("pages", () => {
     expect(html).toContain('download="clacket.license"');
   });
 
-  it("recover answers the same for known and unknown emails", async () => {
-    const ask = (email) => SELF.fetch("https://x/recover", { method: "POST", body: new URLSearchParams({ email }) }).then((r) => r.text());
-    expect(await ask("jane@example.com")).toBe(await ask("nobody@example.com"));
+  it("recover is a help page, not an email resend", async () => {
+    const r = await SELF.fetch("https://x/recover");
+    const html = await r.text();
+    expect(r.status).toBe(200);
+    expect(html).toContain("clacket.license");
+    expect(html).not.toContain("Send my key");
   });
 });
